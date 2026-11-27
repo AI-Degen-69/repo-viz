@@ -139,12 +139,15 @@ export function App() {
         }
 
         const repo = sameRepository ? mergeLocalSnapshot(current!.repo, parsed) : parsed
+        // The snapshot message must not drop a notice the GitHub read already
+        // raised — a capped list or a partial read still applies.
+        const snapshotNotice = sameRepository
+          ? `Local snapshot from ${summary.checkout ?? 'a detached HEAD'} merged into this GitHub map.`
+          : null
         applyResult({
           repo,
           source: sameRepository ? 'github' : 'local',
-          notice: sameRepository
-            ? `Local snapshot from ${summary.checkout ?? 'a detached HEAD'} merged into this GitHub map.`
-            : null,
+          notice: [current?.notice, snapshotNotice].filter(Boolean).join(' ') || null,
           fetchedAt: repo.local?.scannedAt ?? new Date().toISOString(),
         })
         setSnapshotSummary(summary)

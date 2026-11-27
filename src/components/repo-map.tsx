@@ -99,7 +99,10 @@ export function RepoMap({ repo, live, fetchedAt, notice }: RepoMapProps) {
               <TabsTrigger value="pulls">
                 <GitPullRequest />
                 Pull requests
-                <span className="text-[10px] text-faint">{repo.pullRequests.length}</span>
+                <span className="text-[10px] text-faint">
+                  {repo.pullRequests.length}
+                  {repo.truncated?.pullRequests ? '+' : ''}
+                </span>
               </TabsTrigger>
               <TabsTrigger value="activity">
                 <Clock />
@@ -164,7 +167,9 @@ function RepoHeader({ repo, live }: { repo: RepoModel; live: boolean }) {
                     {plural(local.worktrees.length, 'worktree', 'worktrees')}
                   </Stat>
                   <Stat icon={<GitBranch className="size-3.5" />}>
-                    {plural(repo.branches.length, 'branch', 'branches')}
+                    {repo.truncated?.branches
+                      ? `${repo.branches.length}+ branches`
+                      : plural(repo.branches.length, 'branch', 'branches')}
                   </Stat>
                   <Stat icon={<AlertTriangle className="size-3.5" />}>
                     {plural(uncommitted, 'uncommitted file', 'uncommitted files')}
