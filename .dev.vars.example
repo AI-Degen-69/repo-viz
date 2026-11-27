@@ -1,0 +1,4 @@
+# Optional. A token raises the GitHub API limit from 60 to 5,000 requests an
+# hour. It is read only on the server and never sent to the browser.
+# Leave this file out of version control: copy it to .dev.vars.
+GITHUB_TOKEN=
