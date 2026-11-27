@@ -271,19 +271,25 @@ export function SnapshotPanel({
                   Nothing in it leaves this machine unless you choose to open it here.
                 </p>
 
-                <input
-                  ref={inputRef}
-                  type="file"
-                  accept="application/json,.json"
-                  className="sr-only"
-                  onChange={(event) => {
-                    const file = event.currentTarget.files?.[0]
-                    event.currentTarget.value = ''
-                    takeFile(file)
-                  }}
-                />
               </div>
             )}
+
+            {/*
+             * The picker sits outside the view switch. "Load another file"
+             * points at this input, so it has to stay mounted while a summary
+             * is showing.
+             */}
+            <input
+              ref={inputRef}
+              type="file"
+              accept="application/json,.json"
+              className="sr-only"
+              onChange={(event) => {
+                const file = event.currentTarget.files?.[0]
+                event.currentTarget.value = ''
+                takeFile(file)
+              }}
+            />
 
             {current && !summary && !mismatch ? (
               <div className="flex flex-wrap items-center gap-2 border-t border-line px-5 py-3 text-[11px] text-faint">

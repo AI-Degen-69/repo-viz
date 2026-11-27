@@ -97,6 +97,28 @@ async function gh<T>(path: string, token?: string): Promise<GhResult<T>> {
   }
 }
 
+const PAGE_SIZE = 100
+// GitHub caps one page at 100 entries, so a complete list takes more than one
+// request. The page cap keeps a single map from walking a very large
+// repository; when it is reached the caller reports a truncated list instead of
+// presenting the collected length as a total.
+const MAX_PAGES = 5
+
+type PagedResult<T> = { ok: boolean; items: T[]; truncated: boolean }
+
+async function ghPaged<T>(path: string, token?: string): Promise<PagedResult<T>> {
+  const items: T[] = []
+  const separator = path.includes('?') ? '&' : '?'
+  for (let page = 1; page <= MAX_PAGES; page += 1) {
+    const result = await gh<T[]>(`${path}${separator}per_page=${PAGE_SIZE}&page=${page}`, token)
+    if (!result.ok) return { ok: false, items, truncated: false }
+    if (!Array.isArray(result.data)) return { ok: true, items, truncated: false }
+    items.push(...result.data)
+    if (result.data.length < PAGE_SIZE) return { ok: true, items, truncated: false }
+  }
+  return { ok: true, items, truncated: true }
+}
+
 export function parseRepoInput(input: string): { owner: string; name: string } | null {
   let value = input.trim()
   if (!value) return null
@@ -171,17 +193,27 @@ async function loadRepo(target: { owner: string; name: string }, token?: string)
   }
 
   const ghRepo = repoResult.data
-  const [branchesResult, pullsResult, languagesResult, contributorsResult, commitsResult, activityResult] =
+  // A token with private access must not turn this public map into a window
+  // into private repositories. SPEC.md promises `not_found` for them, and this
+  // runs before any detail read or cache write.
+  if (ghRepo.private) {
+    return {
+      ok: false,
+      failure: { status: 404, error: 'Repository not found. Check the link, or it may be private.', code: 'not_found' },
+    }
+  }
+
+  const [branchesPage, pullsPage, languagesResult, contributorsResult, commitsResult, activityResult] =
     await Promise.all([
-      gh<GhBranch[]>(`${base}/branches?per_page=100`, token),
-      gh<GhPull[]>(`${base}/pulls?state=open&per_page=100&sort=updated&direction=desc`, token),
+      ghPaged<GhBranch>(`${base}/branches`, token),
+      ghPaged<GhPull>(`${base}/pulls?state=open&sort=updated&direction=desc`, token),
       gh<Record<string, number>>(`${base}/languages`, token),
       gh<GhContributor[]>(`${base}/contributors?per_page=12`, token),
       gh<GhCommit[]>(`${base}/commits?per_page=8`, token),
       gh<GhActivity[]>(`${base}/stats/commit_activity`, token),
     ])
 
-  const rawPulls = pullsResult.ok && pullsResult.data ? pullsResult.data : []
+  const rawPulls = pullsPage.items
   const pullRequests: RepoPullRequest[] = rawPulls
     .map((pull) => ({
       number: pull.number,
@@ -222,7 +254,7 @@ async function loadRepo(target: { owner: string; name: string }, token?: string)
     pullRequestsByHead.set(ref, list)
   }
 
-  const rawBranches = branchesResult.ok && branchesResult.data ? branchesResult.data : []
+  const rawBranches = branchesPage.items
   const branches: RepoBranch[] = rawBranches
     .map((branch) => ({
       name: branch.name,
@@ -294,8 +326,15 @@ async function loadRepo(target: { owner: string; name: string }, token?: string)
     commitActivity,
   }
 
-  const partial = [branchesResult, pullsResult, contributorsResult, commitsResult].some((result) => !result.ok)
-  const notice = partial ? 'Some GitHub data did not answer. The map shows what did.' : null
+  const partial = [branchesPage, pullsPage, contributorsResult, commitsResult].some((result) => !result.ok)
+  // A capped list is a floor, not a total, so the map says so instead of
+  // counting the pages it read as if the repository ended there.
+  const capped = [...(branchesPage.truncated ? ['branches'] : []), ...(pullsPage.truncated ? ['open pull requests'] : [])]
+  const notice = capped.length
+    ? `Only the first ${MAX_PAGES * PAGE_SIZE} ${capped.join(' and ')} are read, so these counts are a floor rather than a total.`
+    : partial
+      ? 'Some GitHub data did not answer. The map shows what did.'
+      : null
   const at = Date.now()
   cache.set(key, { at, repo, notice })
 

@@ -53,6 +53,14 @@ function parseArgs(argv: string[]): Options {
   return { target, repo, out }
 }
 
+// A remote can carry credentials (`https://user:token@host/owner/name.git`).
+// A token never belongs in a snapshot, so it is stripped and the repository
+// address stays readable.
+function stripCredentials(url: string | null): string | null {
+  if (!url) return null
+  return url.replace(/\/\/[^/@]*@/, '//')
+}
+
 function git(cwd: string, args: string[]): string | null {
   try {
     // Strip only the trailing newline: `.trim()` would remove the leading
@@ -257,7 +265,7 @@ function snapshot(repoPath: string): RepoModel {
     archived: false,
     fork: remotes.includes('upstream'),
     isPrivate: false,
-    cloneUrl: origin ?? repoPath,
+    cloneUrl: stripCredentials(origin) ?? repoPath,
     branches,
     pullRequests: [],
     languages: [],

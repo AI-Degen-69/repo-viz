@@ -239,7 +239,12 @@ export function TopologyCanvas({ repo, live, fetchedAt }: TopologyCanvasProps) {
   const selectedBranch =
     selection?.kind === 'branch' ? (layout.branches.find((branch) => branch.name === selection.name) ?? null) : null
   const selectedPullNode = selection?.kind === 'pull' ? (pullsByNumber.get(selection.number) ?? null) : null
-  const selectedPull = selectedPullNode?.pr ?? null
+  // A branch can carry more pull requests than the map has room to mark, so the
+  // record comes from the model and the marker only supplies its map position.
+  const selectedPull =
+    selection?.kind === 'pull'
+      ? (repo.pullRequests.find((pull) => pull.number === selection.number) ?? selectedPullNode?.pr ?? null)
+      : null
   const selectedCommit =
     selection?.kind === 'commit' ? (layout.commits.find((commit) => commit.sha === selection.sha) ?? null) : null
 

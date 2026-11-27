@@ -346,7 +346,7 @@ function snapshot(repoPath, options) {
     archived: false,
     fork: remotes.includes('upstream'),
     isPrivate: false,
-    cloneUrl: redact ? (htmlUrl || '<redacted>') : (origin ?? repoPath),
+    cloneUrl: redact ? (htmlUrl || '<redacted>') : (stripCredentials(origin) ?? repoPath),
     branches,
     pullRequests: [],
     languages: [],
@@ -364,6 +364,14 @@ function snapshot(repoPath, options) {
   }
 
   return repo
+}
+
+// A remote can carry credentials (`https://user:token@host/owner/name.git`).
+// A token never belongs in a snapshot, so it is stripped whether or not
+// `--redact` was passed; the repository address stays readable.
+function stripCredentials(url) {
+  if (!url) return null
+  return url.replace(/\/\/[^/@]*@/, '//')
 }
 
 // ---------------------------------------------------------------------------
