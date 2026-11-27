@@ -290,6 +290,113 @@ test('turns a pasted link into the map model', async () => {
   expect(body.repo.commitActivity).toEqual([3])
 })
 
+test('a list longer than the page cap is read to the cap and reported as a floor', async () => {
+  const requested: string[] = []
+  globalThis.fetch = (async (input: string | URL | Request) => {
+    const url = String(input)
+    requested.push(url)
+    if (url.endsWith('/repos/octo/dense')) {
+      return json(
+        permalinkRepo({
+          name: 'dense',
+          full_name: 'octo/dense',
+          html_url: 'https://github.com/octo/dense',
+          clone_url: 'https://github.com/octo/dense.git',
+        }),
+      )
+    }
+    // Every page comes back full, so only the page cap can end the walk.
+    const page = Number(new URL(url).searchParams.get('page') ?? '1')
+    const offset = (page - 1) * 100
+    if (url.includes('/branches')) {
+      return json(
+        Array.from({ length: 100 }, (_, index) => ({
+          name: `b-${offset + index}`,
+          commit: { sha: `sha${offset + index}` },
+          protected: false,
+        })),
+      )
+    }
+    if (url.includes('/pulls')) {
+      return json(
+        Array.from({ length: 100 }, (_, index) => ({
+          number: offset + index + 1,
+          title: `Pull ${offset + index + 1}`,
+          user: { login: 'sam', avatar_url: '' },
+          head: { ref: `b-${offset + index}`, label: `octo:b-${offset + index}`, repo: { full_name: 'octo/dense' } },
+          base: { ref: 'main' },
+          draft: false,
+          created_at: '2026-11-20T10:00:00Z',
+          updated_at: '2026-11-25T10:00:00Z',
+          html_url: `https://github.com/octo/dense/pull/${offset + index + 1}`,
+          comments: 0,
+          labels: [],
+        })),
+      )
+    }
+    if (url.includes('/languages')) return json({ TypeScript: 100 })
+    if (url.includes('/contributors')) return json([])
+    if (url.includes('/commits')) return json([])
+    if (url.includes('/stats/commit_activity')) return json([])
+    return json({}, 404)
+  }) as unknown as typeof fetch
+
+  const response = await call('https://github.com/octo/dense')
+  expect(response.status).toBe(200)
+
+  const body = (await response.json()) as {
+    repo: { branches: unknown[]; pullRequests: unknown[]; truncated?: { branches: boolean; pullRequests: boolean } }
+    notice: string | null
+  }
+
+  // Five full pages of 100 is the cap, and exactly the cap is a floor.
+  expect(body.repo.branches.length).toBe(500)
+  expect(body.repo.pullRequests.length).toBe(500)
+  expect(body.repo.truncated).toEqual({ branches: true, pullRequests: true })
+  expect(body.notice).toContain('Only the first 500 branches and open pull requests are read')
+  expect(body.notice).toContain('floor rather than a total')
+
+  const pageOf = (path: string) =>
+    requested
+      .filter((url) => url.includes(path))
+      .map((url) => new URL(url).searchParams.get('page'))
+  expect(pageOf('/branches')).toEqual(['1', '2', '3', '4', '5'])
+  expect(pageOf('/pulls')).toEqual(['1', '2', '3', '4', '5'])
+})
+
+test('a list that ends before the page cap is not marked as a floor', async () => {
+  globalThis.fetch = (async (input: string | URL | Request) => {
+    const url = String(input)
+    if (url.endsWith('/repos/octo/short')) {
+      return json(
+        permalinkRepo({
+          name: 'short',
+          full_name: 'octo/short',
+          html_url: 'https://github.com/octo/short',
+          clone_url: 'https://github.com/octo/short.git',
+        }),
+      )
+    }
+    const page = Number(new URL(url).searchParams.get('page') ?? '1')
+    if (url.includes('/branches')) {
+      return json(page === 1 ? [{ name: 'main', commit: { sha: 'abc1234def' }, protected: true }] : [])
+    }
+    if (url.includes('/pulls')) return json([])
+    if (url.includes('/languages')) return json({ TypeScript: 100 })
+    if (url.includes('/contributors')) return json([])
+    if (url.includes('/commits')) return json([])
+    if (url.includes('/stats/commit_activity')) return json([])
+    return json({}, 404)
+  }) as unknown as typeof fetch
+
+  const body = (await (await call('https://github.com/octo/short')).json()) as {
+    repo: { truncated?: unknown }
+    notice: string | null
+  }
+  expect(body.repo.truncated).toBeUndefined()
+  expect(body.notice).toBeNull()
+})
+
 test('a missing repository is a clear 404, not a guessed map', async () => {
   globalThis.fetch = (async () => json({ message: 'Not Found' }, 404)) as unknown as typeof fetch
   const response = await call('https://github.com/nobody/nothing-here')

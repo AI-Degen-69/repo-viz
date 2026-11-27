@@ -42,14 +42,14 @@ export function Hero({ value, onValueChange, onSubmit, onOpenSnapshot, loading, 
                 value={value}
                 onChange={(event) => onValueChange(event.target.value)}
                 placeholder={hero.placeholder}
-                className="h-9 border-0 bg-transparent px-0 text-[13.5px] shadow-none focus-visible:ring-0 md:text-[13.5px]"
+                className="h-9 border-0 bg-transparent px-0 text-[14.5px] shadow-none focus-visible:ring-0 md:text-[14.5px]"
               />
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <button
                 type="button"
                 onClick={onOpenSnapshot}
-                className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-[11px] border border-line px-2.5 text-[11.5px] text-faint transition-colors hover:border-line-strong hover:text-dim focus-visible:ring-2 focus-visible:ring-brand/40"
+                className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-[11px] border border-line px-2.5 text-[12.5px] text-faint transition-colors hover:border-line-strong hover:text-dim focus-visible:ring-2 focus-visible:ring-brand/40"
               >
                 <FileUp className="size-3.5" />
                 <span className="hidden sm:inline">Local snapshot</span>
@@ -70,7 +70,7 @@ export function Hero({ value, onValueChange, onSubmit, onOpenSnapshot, loading, 
             </div>
           </form>
           {error ? (
-            <p role="alert" className="mt-2 text-[12.5px] text-brand-3">
+            <p role="alert" className="mt-2 text-[13.5px] text-brand-3">
               {error}
             </p>
           ) : null}
@@ -91,7 +91,7 @@ export function Hero({ value, onValueChange, onSubmit, onOpenSnapshot, loading, 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease }}
-            className="depth relative inline-flex h-8 items-center gap-2 rounded-[12px] bg-white/[0.04] px-3 text-[12.5px] text-dim backdrop-blur"
+            className="depth relative inline-flex h-8 items-center gap-2 rounded-[12px] bg-white/[0.04] px-3 text-[13.5px] text-dim backdrop-blur"
           >
             <span className="round size-1.5 rounded-full bg-[#8ee0c4]" />
             {hero.badge}
@@ -137,10 +137,10 @@ export function Hero({ value, onValueChange, onSubmit, onOpenSnapshot, loading, 
                   value={value}
                   onChange={(event) => onValueChange(event.target.value)}
                   placeholder={hero.placeholder}
-                  className="h-10 border-0 bg-transparent px-0 text-[15px] shadow-none focus-visible:ring-0 md:text-[15px]"
+                  className="h-10 border-0 bg-transparent px-0 text-[16px] shadow-none focus-visible:ring-0 md:text-[16px]"
                 />
               </div>
-              <Button type="submit" disabled={loading} className="h-10 shrink-0 rounded-[13px] px-5 text-[14px]">
+              <Button type="submit" disabled={loading} className="h-10 shrink-0 rounded-[13px] px-5 text-[15px]">
                 {loading ? (
                   <>
                     <Loader2 className="animate-spin" />
@@ -155,11 +155,11 @@ export function Hero({ value, onValueChange, onSubmit, onOpenSnapshot, loading, 
               </Button>
             </div>
             {error ? (
-              <p role="alert" className="mt-2 text-left text-[13px] text-brand-3">
+              <p role="alert" className="mt-2 text-left text-[14px] text-brand-3">
                 {error}
               </p>
             ) : (
-              <p className="mt-2 text-left text-[12px] text-faint">{hero.note}</p>
+              <p className="mt-2 text-left text-[13px] text-faint">{hero.note}</p>
             )}
           </motion.form>
 
@@ -167,7 +167,7 @@ export function Hero({ value, onValueChange, onSubmit, onOpenSnapshot, loading, 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[12px] text-faint"
+            className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[13px] text-faint"
           >
             <span>Try</span>
             {examples.map((example) => (
@@ -178,7 +178,7 @@ export function Hero({ value, onValueChange, onSubmit, onOpenSnapshot, loading, 
                   onValueChange(example)
                   onSubmit(example)
                 }}
-                className="rounded-full border border-line px-2.5 py-1 font-mono text-[11px] text-dim transition-colors hover:border-line-strong hover:text-fg"
+                className="rounded-full border border-line px-2.5 py-1 font-mono text-[12px] text-dim transition-colors hover:border-line-strong hover:text-fg"
               >
                 {example}
               </button>
@@ -194,12 +194,12 @@ export function Hero({ value, onValueChange, onSubmit, onOpenSnapshot, loading, 
             <button
               type="button"
               onClick={onOpenSnapshot}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-line px-3 py-1.5 text-[12px] text-dim transition-colors hover:border-line-strong hover:text-fg focus-visible:ring-2 focus-visible:ring-brand/40"
+              className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-line px-3 py-1.5 text-[13px] text-dim transition-colors hover:border-line-strong hover:text-fg focus-visible:ring-2 focus-visible:ring-brand/40"
             >
               <FileUp className="size-3.5" />
               Connect a local snapshot
             </button>
-            <span className="text-[10.5px] text-faint">See your local branches, worktrees and uncommitted files</span>
+            <span className="text-[11.5px] text-faint">See your local branches, worktrees and uncommitted files</span>
           </motion.div>
         </div>
       </Container>
