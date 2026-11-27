@@ -13,7 +13,7 @@ export function Nav() {
         <Container className="flex h-16 items-center justify-between">
           <Logo />
           <div className="flex items-center gap-3 sm:gap-5">
-            <span className="hidden items-center gap-1.5 text-[14px] text-faint sm:flex">
+            <span className="hidden items-center gap-1.5 text-body-sm text-faint sm:flex">
               <ShieldCheck className="size-3.5" />
               {nav.note}
             </span>

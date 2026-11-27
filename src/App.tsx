@@ -172,41 +172,46 @@ export function App() {
 
   return (
     <>
-      <Nav />
-      <main>
-        <Hero
-          value={value}
-          onValueChange={setValue}
-          onSubmit={analyze}
-          onOpenSnapshot={openSnapshotPanel}
-          loading={loading}
-          error={error}
-          compact={result !== null}
-        />
-        <div ref={mapRef} className="scroll-mt-20">
-          {loading && result ? (
-            <div className="w-full px-5 pt-4 sm:px-8">
-              <p className="flex items-center gap-2 rounded-[10px] border border-line bg-white/[0.03] px-3 py-2 text-[13.5px] text-dim">
-                <span className="size-2 animate-pulse rounded-full bg-brand" />
-                Reading <span className="font-mono text-fg">{value || 'the new repository'}</span> — the map below
-                still shows <span className="font-mono text-fg">{result.repo.fullName}</span> until the new data arrives.
-              </p>
-            </div>
-          ) : null}
-          {loading && !result ? (
-            <RepoMapSkeleton />
-          ) : (
-            <RepoMap
-              key={sessionKey}
-              repo={repo}
-              live={result?.source === 'github'}
-              fetchedAt={result?.fetchedAt ?? null}
-              notice={result?.notice ?? null}
-            />
-          )}
-        </div>
-      </main>
-      <Footer />
+      {/* While the panel is open the page behind it is inert and hidden from
+          screen readers. The dialog is a sibling of this block, so it stays
+          reachable. */}
+      <div inert={snapshotOpen} aria-hidden={snapshotOpen || undefined}>
+        <Nav />
+        <main>
+          <Hero
+            value={value}
+            onValueChange={setValue}
+            onSubmit={analyze}
+            onOpenSnapshot={openSnapshotPanel}
+            loading={loading}
+            error={error}
+            compact={result !== null}
+          />
+          <div ref={mapRef} className="scroll-mt-20">
+            {loading && result ? (
+              <div className="w-full px-5 pt-4 sm:px-8">
+                <p className="flex items-center gap-2 rounded-[10px] border border-line bg-white/[0.03] px-3 py-2 text-body-sm text-dim">
+                  <span className="size-2 animate-pulse rounded-full bg-brand" />
+                  Reading <span className="font-mono text-fg">{value || 'the new repository'}</span> — the map below
+                  still shows <span className="font-mono text-fg">{result.repo.fullName}</span> until the new data arrives.
+                </p>
+              </div>
+            ) : null}
+            {loading && !result ? (
+              <RepoMapSkeleton />
+            ) : (
+              <RepoMap
+                key={sessionKey}
+                repo={repo}
+                live={result?.source === 'github'}
+                fetchedAt={result?.fetchedAt ?? null}
+                notice={result?.notice ?? null}
+              />
+            )}
+          </div>
+        </main>
+        <Footer />
+      </div>
 
       <SnapshotPanel
         open={snapshotOpen}

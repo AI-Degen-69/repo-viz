@@ -21,6 +21,31 @@
   --color-brand-2: #ffb547;
   --color-brand-3: #ff4d6d;
 
+  /*
+    The type scale. Sizes live here and nowhere else: components use a named
+    step (text-micro … text-h1-xl) and never a raw pixel value, so changing a
+    step below changes every place that uses it. No step sets a line-height,
+    which leaves each component free to pair it with leading-* as before.
+
+    Steps are whole pixels. The arbitrary values they replaced carried
+    half-pixel steps left over from earlier size tuning; preserving those would
+    take twenty tokens and stop being a scale, so the half-pixel differences
+    are deliberate.
+  */
+  --text-micro: 11px; /* canvas annotations, uppercase micro labels */
+  --text-caption: 12px; /* metadata under a title, hints, counts */
+  --text-label: 13px; /* table heads, small labels, toolbar text */
+  --text-body-sm: 14px; /* table cells, list rows, secondary prose */
+  --text-body: 15px; /* default reading size */
+  --text-lead: 16px; /* card titles, descriptions, dialog body */
+  --text-title: 18px; /* dialog headings */
+  --text-title-lg: 20px; /* repository name */
+  --text-h2: 26px; /* section heading */
+  --text-h2-lg: 32px; /* section heading, wide screens */
+  --text-h1: 42px; /* hero, small screens */
+  --text-h1-lg: 64px; /* hero, medium screens */
+  --text-h1-xl: 72px; /* hero, large screens */
+
   --radius-control: 14px;
   --radius-control-lg: 16px;
   --radius-card: 24px;
