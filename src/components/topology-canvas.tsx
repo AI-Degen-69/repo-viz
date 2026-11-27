@@ -331,15 +331,15 @@ export function TopologyCanvas({ repo, live, fetchedAt }: TopologyCanvasProps) {
               href={repo.htmlUrl}
               target="_blank"
               rel="noreferrer"
-              className="truncate font-mono text-[14px] text-dim transition-colors hover:text-fg"
+              className="truncate font-mono text-body-sm text-dim transition-colors hover:text-fg"
             >
               {identity}
             </a>
           ) : (
-            <span className="truncate font-mono text-[14px] text-dim">{identity}</span>
+            <span className="truncate font-mono text-body-sm text-dim">{identity}</span>
           )}
           <Badge variant={localOnly ? 'warning' : live ? 'success' : 'muted'}>{sourceLabel}</Badge>
-          <span className="text-[13px] text-faint">
+          <span className="text-label text-faint">
             {layout.counts.branches}
             {repo.truncated?.branches ? '+' : ''}{' '}
             {layout.counts.branches === 1 && !repo.truncated?.branches ? 'branch' : 'branches'} · {layout.counts.pulls}
@@ -347,7 +347,7 @@ export function TopologyCanvas({ repo, live, fetchedAt }: TopologyCanvasProps) {
             {layout.counts.pulls === 1 && !repo.truncated?.pullRequests ? 'PR' : 'PRs'}
             {layout.hiddenBranches > 0 ? ` · ${layout.branches.length} drawn` : ''}
           </span>
-          <span className="ml-auto flex items-center gap-1.5 text-[12.5px] text-faint">
+          <span className="ml-auto flex items-center gap-1.5 text-label text-faint">
             <MapPin className="size-3 text-brand" />
             You are here: <span className="text-dim">{hereLabel}</span>
             {live && fetchedAt ? <span className="hidden text-faint sm:inline">· read {timeAgo(fetchedAt)}</span> : null}
@@ -506,11 +506,11 @@ export function TopologyCanvas({ repo, live, fetchedAt }: TopologyCanvasProps) {
               className="absolute z-20 block w-[180px] -translate-y-1/2"
               style={{ left: 24, top: layout.spineY }}
             >
-              <span className="flex items-center gap-1.5 font-mono text-[13px] text-dim">
+              <span className="flex items-center gap-1.5 font-mono text-label text-dim">
                 {repo.local ? <GitBranch className="size-3" /> : <GitFork className="size-3" />}
                 <span className="truncate">{repo.local ? 'local clone' : `github.com/${repo.fullName}`}</span>
               </span>
-              <span className="mt-0.5 flex items-center gap-1.5 text-[10.5px] uppercase tracking-[0.16em] text-faint">
+              <span className="mt-0.5 flex items-center gap-1.5 text-micro uppercase tracking-[0.16em] text-faint">
                 Repository origin
                 {repo.archived ? <span>· archived</span> : null}
               </span>
@@ -523,9 +523,9 @@ export function TopologyCanvas({ repo, live, fetchedAt }: TopologyCanvasProps) {
               className="absolute z-20 flex -translate-y-full items-center gap-2"
               style={{ left: layout.startX + 2, top: layout.spineY - 12 }}
             >
-              <span className="flex items-center gap-1.5 rounded-full bg-brand/15 px-2 py-0.5 font-mono text-[12.5px] text-brand">
+              <span className="flex items-center gap-1.5 rounded-full bg-brand/15 px-2 py-0.5 font-mono text-label text-brand">
                 {layout.defaultBranch}
-                <span className="text-[10.5px] uppercase tracking-[0.16em] text-brand/80">default</span>
+                <span className="text-micro uppercase tracking-[0.16em] text-brand/80">default</span>
                 {layout.head.protected ? <Lock className="size-2.5" /> : null}
               </span>
             </div>
@@ -537,17 +537,17 @@ export function TopologyCanvas({ repo, live, fetchedAt }: TopologyCanvasProps) {
               className="absolute z-20 w-[248px] rounded-[14px] border border-brand/25 bg-surface/95 p-2.5 backdrop-blur-sm"
               style={{ left: layout.endX - 248, top: layout.spineY - 132 }}
             >
-              <p className="flex items-center gap-1 text-[10.5px] uppercase tracking-[0.16em] text-brand">
+              <p className="flex items-center gap-1 text-micro uppercase tracking-[0.16em] text-brand">
                 <MapPin className="size-2.5" />
                 Remote HEAD
                 {layout.head.protected ? <Lock className="ml-auto size-2.5 text-faint" /> : null}
               </p>
-              <p className="mt-1 flex items-baseline gap-1.5 font-mono text-[14px]">
+              <p className="mt-1 flex items-baseline gap-1.5 font-mono text-body-sm">
                 <span className="truncate text-fg">{layout.head.name}</span>
                 <span className="shrink-0 text-faint">@ {layout.head.short}</span>
               </p>
-              <p className="mt-0.5 truncate text-[12.5px] text-dim">{layout.head.message}</p>
-              <p className="mt-1 text-[11px] leading-relaxed text-faint">
+              <p className="mt-0.5 truncate text-label text-dim">{layout.head.message}</p>
+              <p className="mt-1 text-micro leading-relaxed text-faint">
                 {layout.head.date ? `updated ${timeAgo(layout.head.date)}` : 'date not fetched'} · the newest commit
                 GitHub knows on this branch, not a local checkout
               </p>
@@ -556,7 +556,7 @@ export function TopologyCanvas({ repo, live, fetchedAt }: TopologyCanvasProps) {
 
             {layout.counts.approximate > 0 ? (
               <div
-                className="pointer-events-none absolute z-10 max-w-[220px] text-[11px] leading-relaxed text-faint"
+                className="pointer-events-none absolute z-10 max-w-[220px] text-micro leading-relaxed text-faint"
                 style={{ left: layout.startX, top: layout.spineY + 30 }}
               >
                 dashed forks = merge-base not fetched
@@ -635,7 +635,7 @@ export function TopologyCanvas({ repo, live, fetchedAt }: TopologyCanvasProps) {
 
             {!layout.historyKnown ? (
               <div
-                className="absolute z-20 text-[12px] text-faint"
+                className="absolute z-20 text-caption text-faint"
                 style={{ left: layout.startX, top: layout.spineY + 22 }}
               >
                 No default-branch commits fetched · the spine is shown from the branch list
@@ -645,7 +645,7 @@ export function TopologyCanvas({ repo, live, fetchedAt }: TopologyCanvasProps) {
 
           {/* --- screen-space overlays ------------------------------------- */}
 
-          <div className="pointer-events-none absolute left-3 top-3 z-20 hidden items-center gap-2 rounded-full border border-line bg-bg/70 px-2.5 py-1 text-[12px] text-faint backdrop-blur sm:flex">
+          <div className="pointer-events-none absolute left-3 top-3 z-20 hidden items-center gap-2 rounded-full border border-line bg-bg/70 px-2.5 py-1 text-caption text-faint backdrop-blur sm:flex">
             <span>Drag to pan</span>
             <span className="text-line-strong">·</span>
             <span>Scroll to zoom</span>
@@ -658,7 +658,7 @@ export function TopologyCanvas({ repo, live, fetchedAt }: TopologyCanvasProps) {
               <button
                 type="button"
                 onClick={backToTimeline}
-                className="flex items-center gap-1.5 rounded-full border border-brand/30 bg-surface/90 px-3 py-1 text-[12.5px] text-dim shadow-glow backdrop-blur transition-colors hover:border-brand/60 hover:text-fg"
+                className="flex items-center gap-1.5 rounded-full border border-brand/30 bg-surface/90 px-3 py-1 text-label text-dim shadow-glow backdrop-blur transition-colors hover:border-brand/60 hover:text-fg"
               >
                 <ChevronLeft className="size-3" />
                 Back to the timeline
@@ -671,7 +671,7 @@ export function TopologyCanvas({ repo, live, fetchedAt }: TopologyCanvasProps) {
               <button
                 type="button"
                 onClick={toggleExpanded}
-                className="flex items-center gap-1.5 rounded-full border border-line-strong bg-surface/90 px-3 py-1 text-[12.5px] text-dim shadow-glow backdrop-blur transition-colors hover:border-brand/50 hover:text-fg"
+                className="flex items-center gap-1.5 rounded-full border border-line-strong bg-surface/90 px-3 py-1 text-label text-dim shadow-glow backdrop-blur transition-colors hover:border-brand/50 hover:text-fg"
               >
                 <GitBranch className="size-3" />
                 {layout.hiddenBranches > 0 ? (
@@ -686,7 +686,7 @@ export function TopologyCanvas({ repo, live, fetchedAt }: TopologyCanvasProps) {
             </div>
           ) : null}
 
-          <div className="pointer-events-none absolute bottom-3 left-3 z-20 hidden max-w-[calc(100%-150px)] flex-wrap items-center gap-x-3 gap-y-1 rounded-[12px] border border-line bg-bg/70 px-2.5 py-1.5 text-[11.5px] text-faint backdrop-blur sm:flex">
+          <div className="pointer-events-none absolute bottom-3 left-3 z-20 hidden max-w-[calc(100%-150px)] flex-wrap items-center gap-x-3 gap-y-1 rounded-[12px] border border-line bg-bg/70 px-2.5 py-1.5 text-caption text-faint backdrop-blur sm:flex">
             <Legend tone="spine">Default timeline</Legend>
             <Legend tone="pr">Open PR</Legend>
             <Legend tone="draft">Draft PR</Legend>
@@ -703,7 +703,7 @@ export function TopologyCanvas({ repo, live, fetchedAt }: TopologyCanvasProps) {
             <IconButton label="Zoom out" onClick={() => zoomBy(1 / 1.3)}>
               <Minus />
             </IconButton>
-            <span className="w-9 text-center font-mono text-[12px] text-faint">{Math.round(view.k * 100)}%</span>
+            <span className="w-9 text-center font-mono text-caption text-faint">{Math.round(view.k * 100)}%</span>
             <IconButton label="Zoom in" onClick={() => zoomBy(1.3)}>
               <Plus />
             </IconButton>
@@ -740,7 +740,7 @@ export function TopologyCanvas({ repo, live, fetchedAt }: TopologyCanvasProps) {
           ) : null}
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-line px-4 py-2 text-[12px] text-faint">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-line px-4 py-2 text-caption text-faint">
           <span>
             {layout.counts.approximate > 0
               ? `${layout.counts.approximate} of ${layout.branches.length} drawn branches have an approximate fork point.`
@@ -801,7 +801,7 @@ function CommitNode({
       {showLabel ? (
         <span
           className={cn(
-            'pointer-events-none absolute z-10 w-[132px] -translate-x-1/2 truncate text-center text-[11px] leading-tight',
+            'pointer-events-none absolute z-10 w-[132px] -translate-x-1/2 truncate text-center text-micro leading-tight',
             commit.isHead ? 'text-brand/85' : 'text-faint/70',
           )}
           style={{ left: commit.x, top: commit.y + 14 }}
@@ -857,13 +857,13 @@ function BranchNode({
       <span className={cn('min-w-0', !showLabel && 'hidden')}>
         <span
           className={cn(
-            'block max-w-[252px] truncate font-mono text-[13px] leading-tight',
+            'block max-w-[252px] truncate font-mono text-label leading-tight',
             selected ? 'text-brand' : branch.stale ? 'text-faint' : 'text-fg/90',
           )}
         >
           {branch.name}
         </span>
-        <span className="mt-0.5 flex items-center gap-1 text-[10.5px] leading-tight text-faint">
+        <span className="mt-0.5 flex items-center gap-1 text-micro leading-tight text-faint">
           <span className="font-mono">{branch.short}</span>
           {branch.protected ? <Lock className="size-2.5" aria-label="protected" /> : null}
           {branch.state === 'idle' ? <span>· no open PR</span> : null}
@@ -911,7 +911,7 @@ function PullMarker({
       onClick={onSelect}
       aria-label={`Pull request ${pull.number}: ${pull.pr.title}`}
       className={cn(
-        'absolute z-20 flex -translate-y-1/2 items-center gap-1 rounded-full border px-1.5 py-[2px] font-mono text-[11.5px] backdrop-blur-sm transition-all',
+        'absolute z-20 flex -translate-y-1/2 items-center gap-1 rounded-full border px-1.5 py-[2px] font-mono text-caption backdrop-blur-sm transition-all',
         muted ? 'opacity-40' : 'opacity-100',
         selected
           ? 'border-brand-2 bg-brand-2/25 text-brand-2 shadow-[0_0_0_4px_rgb(255_181_71/0.12)]'
@@ -950,10 +950,10 @@ function CheckoutMarker({ checkout, showLabel }: { checkout: TopologyCheckout; s
       }}
     >
       <span className="flex flex-col items-center gap-0.5">
-        <span className="flex items-center gap-1 rounded-[6px] border border-[#8ee0c4]/45 bg-[#8ee0c4]/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#8ee0c4]">
+        <span className="flex items-center gap-1 rounded-[6px] border border-[#8ee0c4]/45 bg-[#8ee0c4]/10 px-1.5 py-0.5 text-micro font-semibold uppercase tracking-[0.12em] text-[#8ee0c4]">
           <FolderGit2 className="size-2.5" /> Local checkout
         </span>
-        <span className="max-w-[210px] truncate font-mono text-[10.5px] text-[#8ee0c4]/80">
+        <span className="max-w-[210px] truncate font-mono text-micro text-[#8ee0c4]/80">
           {checkout.branch ?? 'detached HEAD'}
           {checkout.ahead > 0 ? ` · ${checkout.ahead} unpushed` : ''}
           {checkout.dirty > 0 ? ` · ${checkout.dirty} file${checkout.dirty === 1 ? '' : 's'}` : ''}
@@ -990,12 +990,12 @@ function HereMarker({
       title="You are viewing this position. It is not your local checkout."
     >
       <span className="flex flex-col items-center">
-        <span className="flex items-center gap-1 rounded-full border border-brand/40 bg-brand/15 px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-[0.14em] text-brand">
+        <span className="flex items-center gap-1 rounded-full border border-brand/40 bg-brand/15 px-2 py-0.5 text-micro font-semibold uppercase tracking-[0.14em] text-brand">
           <MapPin className="size-2.5" />
           You are here
         </span>
         {showLabel ? (
-          <span className="mt-0.5 max-w-[170px] truncate font-mono text-[10.5px] text-faint">{label}</span>
+          <span className="mt-0.5 max-w-[170px] truncate font-mono text-micro text-faint">{label}</span>
         ) : null}
       </span>
     </div>
@@ -1087,7 +1087,7 @@ function Tooltip({ tip, layout, width, height }: { tip: Tip; layout: TopologyLay
           <TipRow label="Author" value={commit.author} />
           <TipRow label="Commit" value={commit.short} mono />
           <TipRow label="Date" value={commit.date ? timeAgo(commit.date) : 'unknown'} />
-          <p className="mt-1.5 text-[11.5px] text-faint">On {layout.defaultBranch}</p>
+          <p className="mt-1.5 text-caption text-faint">On {layout.defaultBranch}</p>
         </>
       )
     }
@@ -1113,7 +1113,7 @@ function Tooltip({ tip, layout, width, height }: { tip: Tip; layout: TopologyLay
   const top = Math.max(tip.y - 12, 140)
   return (
     <div
-      className="pointer-events-none absolute z-40 w-[248px] -translate-x-1/2 -translate-y-full rounded-[12px] border border-line-strong bg-surface-2/95 px-2.5 py-2 text-[12.5px] shadow-glow backdrop-blur"
+      className="pointer-events-none absolute z-40 w-[248px] -translate-x-1/2 -translate-y-full rounded-[12px] border border-line-strong bg-surface-2/95 px-2.5 py-2 text-label shadow-glow backdrop-blur"
       style={{ left, top: Math.min(top, height - 12) }}
     >
       {body}
@@ -1123,7 +1123,7 @@ function Tooltip({ tip, layout, width, height }: { tip: Tip; layout: TopologyLay
 
 function TipTitle({ icon, text, mono }: { icon: ReactNode; text: string; mono?: boolean }) {
   return (
-    <p className={cn('flex items-start gap-1.5 text-[12.5px] leading-snug text-fg', mono && 'font-mono')}>
+    <p className={cn('flex items-start gap-1.5 text-label leading-snug text-fg', mono && 'font-mono')}>
       <span className="mt-0.5 shrink-0 text-brand-2">{icon}</span>
       <span className="line-clamp-2">{text}</span>
     </p>
@@ -1133,8 +1133,8 @@ function TipTitle({ icon, text, mono }: { icon: ReactNode; text: string; mono?: 
 function TipRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <p className="mt-1 flex items-baseline justify-between gap-2">
-      <span className="shrink-0 text-[11px] uppercase tracking-[0.1em] text-faint">{label}</span>
-      <span className={cn('truncate text-[12px] text-dim', mono && 'font-mono')}>{value}</span>
+      <span className="shrink-0 text-micro uppercase tracking-[0.1em] text-faint">{label}</span>
+      <span className={cn('truncate text-caption text-dim', mono && 'font-mono')}>{value}</span>
     </p>
   )
 }
@@ -1168,10 +1168,10 @@ function DetailPanel({ repo, layout, branch, commit, pull, pullNode, onClose, on
     >
       <div className="flex items-start justify-between gap-3 border-b border-line px-4 py-3">
         <div className="min-w-0">
-          <p className="text-[11px] uppercase tracking-[0.2em] text-faint">
+          <p className="text-micro uppercase tracking-[0.2em] text-faint">
             {branch ? 'Branch' : commit ? 'Commit' : 'Pull request'}
           </p>
-          <h3 className={cn('mt-1 break-words text-[15.5px] font-semibold leading-snug', branch && 'font-mono')}>
+          <h3 className={cn('mt-1 break-words text-lead font-semibold leading-snug', branch && 'font-mono')}>
             {branch ? branch.name : commit ? commit.message : `#${pull?.number ?? ''} ${pull?.title ?? ''}`}
           </h3>
           {(branch || pull) && (
@@ -1206,7 +1206,7 @@ function DetailPanel({ repo, layout, branch, commit, pull, pullNode, onClose, on
         </button>
       </div>
 
-      <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4 text-[13.5px]">
+      <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4 text-body-sm">
         {branch ? (
           <>
             <dl className="space-y-2">
@@ -1233,7 +1233,7 @@ function DetailPanel({ repo, layout, branch, commit, pull, pullNode, onClose, on
 
             <div
               className={cn(
-                'rounded-[12px] border p-2.5 text-[12.5px] leading-relaxed',
+                'rounded-[12px] border p-2.5 text-label leading-relaxed',
                 branch.exact ? 'border-line bg-white/[0.02] text-dim' : 'border-brand-2/20 bg-brand-2/[0.05] text-dim',
               )}
             >
@@ -1252,7 +1252,7 @@ function DetailPanel({ repo, layout, branch, commit, pull, pullNode, onClose, on
             </div>
 
             <section>
-              <p className="text-[11px] uppercase tracking-[0.16em] text-faint">Commits</p>
+              <p className="text-micro uppercase tracking-[0.16em] text-faint">Commits</p>
               {branchCommit ? (
                 <button
                   type="button"
@@ -1261,19 +1261,19 @@ function DetailPanel({ repo, layout, branch, commit, pull, pullNode, onClose, on
                 >
                   <GitCommitHorizontal className="mt-0.5 size-3 shrink-0 text-dim" />
                   <span className="min-w-0">
-                    <span className="block truncate text-[13px] text-dim">{branchCommit.message}</span>
-                    <span className="font-mono text-[11.5px] text-faint">{branchCommit.short}</span>
+                    <span className="block truncate text-label text-dim">{branchCommit.message}</span>
+                    <span className="font-mono text-caption text-faint">{branchCommit.short}</span>
                   </span>
                 </button>
               ) : (
-                <p className="mt-1.5 text-[12.5px] leading-relaxed text-faint">
+                <p className="mt-1.5 text-label leading-relaxed text-faint">
                   Only the branch head is in the fetched data, so individual commits on this branch are not drawn.
                 </p>
               )}
             </section>
 
             <section>
-              <p className="text-[11px] uppercase tracking-[0.16em] text-faint">Pull requests</p>
+              <p className="text-micro uppercase tracking-[0.16em] text-faint">Pull requests</p>
               {branchPulls.length > 0 ? (
                 <ul className="mt-2 space-y-1.5">
                   {branchPulls.map((item) => (
@@ -1284,15 +1284,15 @@ function DetailPanel({ repo, layout, branch, commit, pull, pullNode, onClose, on
                         className="flex w-full items-center gap-2 rounded-[10px] bg-white/[0.03] px-2.5 py-2 text-left transition-colors hover:bg-white/[0.06]"
                       >
                         <GitPullRequest className="size-3 shrink-0 text-brand-2" />
-                        <span className="shrink-0 font-mono text-[12px] text-brand-2">#{item.number}</span>
-                        <span className="min-w-0 flex-1 truncate text-[13px] text-dim">{item.title}</span>
-                        {item.draft ? <span className="shrink-0 text-[11px] uppercase text-faint">draft</span> : null}
+                        <span className="shrink-0 font-mono text-caption text-brand-2">#{item.number}</span>
+                        <span className="min-w-0 flex-1 truncate text-label text-dim">{item.title}</span>
+                        {item.draft ? <span className="shrink-0 text-micro uppercase text-faint">draft</span> : null}
                       </button>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="mt-1.5 text-[12.5px] leading-relaxed text-faint">
+                <p className="mt-1.5 text-label leading-relaxed text-faint">
                   {repo.local
                     ? 'A local snapshot carries no pull requests.'
                     : 'No open pull request opens from this branch.'}
@@ -1310,7 +1310,7 @@ function DetailPanel({ repo, layout, branch, commit, pull, pullNode, onClose, on
               <PanelRow label="Date" value={commit.date ? new Date(commit.date).toLocaleString() : 'Unknown'} />
               <PanelRow label="Relative" value={commit.date ? timeAgo(commit.date) : 'unknown'} />
             </dl>
-            <p className="text-[12.5px] leading-relaxed text-faint">
+            <p className="text-label leading-relaxed text-faint">
               One of the recent commits fetched for {layout.defaultBranch}. Its position on the spine is its order in
               that list.
             </p>
@@ -1341,7 +1341,7 @@ function DetailPanel({ repo, layout, branch, commit, pull, pullNode, onClose, on
                 {pull.labels.map((label) => (
                   <span
                     key={label.name}
-                    className="rounded-full border px-2 py-0.5 text-[11.5px]"
+                    className="rounded-full border px-2 py-0.5 text-caption"
                     style={{ borderColor: `#${label.color}66`, color: `#${label.color}` }}
                   >
                     {label.name}
@@ -1350,7 +1350,7 @@ function DetailPanel({ repo, layout, branch, commit, pull, pullNode, onClose, on
               </div>
             ) : null}
 
-            <div className="space-y-2 rounded-[12px] border border-line bg-white/[0.02] p-2.5 text-[12.5px] leading-relaxed text-dim">
+            <div className="space-y-2 rounded-[12px] border border-line bg-white/[0.02] p-2.5 text-label leading-relaxed text-dim">
               <p className="flex gap-1.5">
                 <GitFork className="mt-0.5 size-3 shrink-0 text-faint" />
                 {pullNode?.external
@@ -1373,7 +1373,7 @@ function DetailPanel({ repo, layout, branch, commit, pull, pullNode, onClose, on
             </div>
 
             {branch ? (
-              <p className="text-[12px] text-faint">Also shown as a marker on {branch.name}.</p>
+              <p className="text-caption text-faint">Also shown as a marker on {branch.name}.</p>
             ) : null}
           </>
         ) : null}
@@ -1434,8 +1434,8 @@ function DetailPanel({ repo, layout, branch, commit, pull, pullNode, onClose, on
 function PanelRow({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="flex items-baseline justify-between gap-3 border-b border-line/60 pb-1.5 last:border-0 last:pb-0">
-      <dt className="shrink-0 text-[11px] uppercase tracking-[0.14em] text-faint">{label}</dt>
-      <dd className="min-w-0 truncate text-right text-[13px] text-dim">{value}</dd>
+      <dt className="shrink-0 text-micro uppercase tracking-[0.14em] text-faint">{label}</dt>
+      <dd className="min-w-0 truncate text-right text-label text-dim">{value}</dd>
     </div>
   )
 }
@@ -1443,7 +1443,7 @@ function PanelRow({ label, value }: { label: string; value: ReactNode }) {
 // A single honest note about what this data can and cannot say.
 function selectionNote(repo: RepoModel) {
   return (
-    <p className="flex gap-1.5 border-t border-line pt-3 text-[11.5px] leading-relaxed text-faint">
+    <p className="flex gap-1.5 border-t border-line pt-3 text-caption leading-relaxed text-faint">
       <Clock className="mt-0.5 size-2.5 shrink-0" />
       {repo.local
         ? 'A local snapshot shows this clone. Positions describe branches, not checkouts.'

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import {
   AlertTriangle,
@@ -73,6 +73,9 @@ export function SnapshotPanel({
   const [tab, setTab] = useState<'generate' | 'upload'>('generate')
   const inputRef = useRef<HTMLInputElement | null>(null)
   const dialogRef = useRef<HTMLDivElement | null>(null)
+  // The dialog takes its accessible name from the heading the user sees, not
+  // from a second copy of the title in an aria-label.
+  const headingId = useId()
 
   // The caller re-creates onClose on every render, so the modal effect below
   // must not depend on it; a ref keeps the latest one without re-running.
@@ -118,14 +121,10 @@ export function SnapshotPanel({
       if (event.key !== 'Tab' || !dialog) return
 
       const items = focusable()
-      if (items.length === 0) {
-        event.preventDefault()
-        dialog.focus()
-        return
-      }
+      const first = items[0]
+      const last = items[items.length - 1]
+      if (!first || !last) return
 
-      const first = items[0]!
-      const last = items[items.length - 1]!
       const current = document.activeElement
       const inside = current instanceof Node && dialog.contains(current)
 
@@ -179,19 +178,21 @@ export function SnapshotPanel({
             initial={{ opacity: 0, y: 14, scale: 0.99 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-            role="dialog"
+                        role="dialog"
             aria-modal="true"
+            aria-labelledby={headingId}
             tabIndex={-1}
-        aria-label="Connect your local Git workspace"
         className="depth relative w-full max-w-3xl overflow-hidden rounded-[20px] border border-line-strong bg-surface/95 shadow-glow"
       >
         <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
           <div className="min-w-0">
-            <p className="flex items-center gap-1.5 text-[12px] uppercase tracking-[0.2em] text-faint">
+            <p className="flex items-center gap-1.5 text-caption uppercase tracking-[0.2em] text-faint">
               <FolderGit2 className="size-3" /> Local snapshot
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold tracking-[-0.02em]">Connect your local Git workspace</h2>
-            <p className="mt-1.5 max-w-xl text-[14px] leading-relaxed text-dim">
+                            <h2 id={headingId} className="mt-1 text-title font-semibold tracking-[-0.02em]">
+                  Connect your local Git workspace
+                </h2>
+            <p className="mt-1.5 max-w-xl text-body-sm leading-relaxed text-dim">
               Topology can map what GitHub knows, but it cannot see the branches and changes on your computer.
               A local snapshot fills that gap.
             </p>
@@ -228,7 +229,7 @@ export function SnapshotPanel({
             {error ? (
               <p
                 role="alert"
-                className="mt-3 flex items-start gap-2 rounded-[10px] border border-brand-3/30 bg-brand-3/[0.06] px-3 py-2 text-[14px] leading-relaxed text-brand-3"
+                className="mt-3 flex items-start gap-2 rounded-[10px] border border-brand-3/30 bg-brand-3/[0.06] px-3 py-2 text-body-sm leading-relaxed text-brand-3"
               >
                 <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
                 {error}
@@ -239,7 +240,7 @@ export function SnapshotPanel({
               <div className="mt-4 space-y-4">
                 <ol className="grid gap-3 sm:grid-cols-2">
                   <Step number={1} title="Download the generator">
-                    <p className="text-[13.5px] leading-relaxed text-dim">
+                    <p className="text-body-sm leading-relaxed text-dim">
                       A single read-only script. No install, no dependencies, no GitHub token.
                     </p>
                     <Button asChild variant="secondary" size="sm" className="mt-2.5">
@@ -249,11 +250,11 @@ export function SnapshotPanel({
                     </Button>
                   </Step>
                   <Step number={2} title="Run it inside your clone">
-                    <p className="text-[13.5px] leading-relaxed text-dim">
+                    <p className="text-body-sm leading-relaxed text-dim">
                       It writes <span className="font-mono text-fg/90">topology-snapshot.json</span> next to where
                       you run it. Nothing leaves your machine.
                     </p>
-                    <p className="mt-2 text-[12.5px] leading-relaxed text-faint">
+                    <p className="mt-2 text-label leading-relaxed text-faint">
                       Needs Node.js 18 or newer. Git must be installed and on your PATH.
                     </p>
                   </Step>
@@ -266,7 +267,7 @@ export function SnapshotPanel({
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <InfoBox icon={<Check className="size-3.5 text-[#8ee0c4]" />} title="What it collects">
-                    <ul className="space-y-1 text-[13.5px] leading-relaxed text-dim">
+                    <ul className="space-y-1 text-body-sm leading-relaxed text-dim">
                       <li>· Repository name and remote URL</li>
                       <li>· Local branches, head SHAs and upstream tracking</li>
                       <li>· Ahead / behind counts where an upstream exists</li>
@@ -276,7 +277,7 @@ export function SnapshotPanel({
                     </ul>
                   </InfoBox>
                   <InfoBox icon={<ShieldCheck className="size-3.5 text-[#8ee0c4]" />} title="What it never does">
-                    <ul className="space-y-1 text-[13.5px] leading-relaxed text-dim">
+                    <ul className="space-y-1 text-body-sm leading-relaxed text-dim">
                       <li>· Never reads file contents, .env values, tokens or environment variables</li>
                       <li>· Never writes to your repository or changes a branch</li>
                       <li>· Never uploads anything or contacts a server</li>
@@ -286,7 +287,7 @@ export function SnapshotPanel({
                 </div>
 
                 <div className="flex flex-wrap items-center justify-between gap-2 rounded-[12px] border border-line bg-white/[0.02] px-3 py-2.5">
-                  <p className="text-[13px] text-faint">Already have a snapshot file?</p>
+                  <p className="text-label text-faint">Already have a snapshot file?</p>
                   <Button variant="outline" size="sm" onClick={() => setTab('upload')}>
                     <FileUp /> Upload it
                   </Button>
@@ -313,10 +314,10 @@ export function SnapshotPanel({
                   <span className="mx-auto grid size-10 place-items-center rounded-full bg-white/[0.05] text-dim">
                     {loading ? <Loader2 className="size-4 animate-spin" /> : <FileJson className="size-4" />}
                   </span>
-                  <p className="mt-3 text-[15px] font-medium">
+                  <p className="mt-3 text-body font-medium">
                     {loading ? 'Reading the snapshot…' : 'Drop topology-snapshot.json here'}
                   </p>
-                  <p className="mt-1 text-[13.5px] text-faint">or choose a file from your computer</p>
+                  <p className="mt-1 text-body-sm text-faint">or choose a file from your computer</p>
                   <Button
                     variant="secondary"
                     size="sm"
@@ -327,12 +328,12 @@ export function SnapshotPanel({
                     <FileUp /> Choose file
                   </Button>
                 </div>
-                <dl className="grid gap-1.5 rounded-[12px] border border-line bg-white/[0.02] px-3 py-2.5 text-[13px] text-faint sm:grid-cols-3">
+                <dl className="grid gap-1.5 rounded-[12px] border border-line bg-white/[0.02] px-3 py-2.5 text-label text-faint sm:grid-cols-3">
                   <Detail label="File name" value="topology-snapshot.json" mono />
                   <Detail label="Format" value="Topology JSON · version 1" />
                   <Detail label="Maximum size" value="8 MB" />
                 </dl>
-                <p className="flex items-start gap-2 text-[13.5px] leading-relaxed text-faint">
+                <p className="flex items-start gap-2 text-body-sm leading-relaxed text-faint">
                   <Lock className="mt-0.5 size-3.5 shrink-0 text-[#8ee0c4]" />
                   Your snapshot is read in this browser tab. It is never uploaded to our servers, and it is
                   discarded when you close the page.
@@ -340,7 +341,7 @@ export function SnapshotPanel({
               </div>
             )}
 
-            <p className="mt-4 flex items-start gap-2 border-t border-line pt-3 text-[13px] leading-relaxed text-faint">
+            <p className="mt-4 flex items-start gap-2 border-t border-line pt-3 text-label leading-relaxed text-faint">
               <Lock className="mt-0.5 size-3.5 shrink-0 text-[#8ee0c4]" />
               Your snapshot is processed locally in this browser tab and is never uploaded to our servers.
               Nothing in it leaves this machine unless you choose to open it here.
@@ -367,7 +368,7 @@ export function SnapshotPanel({
         />
 
         {current && !summary && !mismatch ? (
-          <div className="flex flex-wrap items-center gap-2 border-t border-line px-5 py-3 text-[13px] text-faint">
+          <div className="flex flex-wrap items-center gap-2 border-t border-line px-5 py-3 text-label text-faint">
             <HardDrive className="size-3.5" />
             Currently mapped: <span className="font-mono text-dim">{current.fullName}</span>
             {current.local ? <Badge variant="warning">Local snapshot loaded</Badge> : null}
@@ -397,7 +398,7 @@ function TabButton({
       type="button"
       onClick={onClick}
       className={cn(
-        'flex flex-1 items-center justify-center gap-1.5 rounded-[8px] px-3 py-1.5 text-[14px] transition-colors',
+        'flex flex-1 items-center justify-center gap-1.5 rounded-[8px] px-3 py-1.5 text-body-sm transition-colors',
         active ? 'bg-white/[0.07] text-fg shadow-sm' : 'text-faint hover:text-dim',
       )}
     >
@@ -409,8 +410,8 @@ function TabButton({
 function Step({ number, title, children }: { number: number; title: string; children: React.ReactNode }) {
   return (
     <li className="rounded-[12px] border border-line bg-white/[0.02] p-3">
-      <p className="flex items-center gap-2 text-[14px] font-medium">
-        <span className="grid size-5 shrink-0 place-items-center rounded-full bg-brand/15 font-mono text-[12px] text-brand">
+      <p className="flex items-center gap-2 text-body-sm font-medium">
+        <span className="grid size-5 shrink-0 place-items-center rounded-full bg-brand/15 font-mono text-caption text-brand">
           {number}
         </span>
         {title}
@@ -425,7 +426,7 @@ function CommandBlock({ label, commands }: { label: string; commands: string }) 
   return (
     <div className="min-w-0 overflow-hidden rounded-[12px] border border-line bg-[#0a0807]">
       <div className="flex items-center justify-between gap-2 border-b border-line px-2.5 py-1.5">
-        <span className="truncate text-[12px] uppercase tracking-[0.12em] text-faint">{label}</span>
+        <span className="truncate text-caption uppercase tracking-[0.12em] text-faint">{label}</span>
         <button
           type="button"
           onClick={() => {
@@ -437,13 +438,13 @@ function CommandBlock({ label, commands }: { label: string; commands: string }) 
               })
               .catch(() => setCopied(false))
           }}
-          className="flex shrink-0 items-center gap-1 rounded-[6px] px-1.5 py-0.5 text-[12px] text-faint transition-colors hover:bg-white/[0.06] hover:text-fg"
+          className="flex shrink-0 items-center gap-1 rounded-[6px] px-1.5 py-0.5 text-caption text-faint transition-colors hover:bg-white/[0.06] hover:text-fg"
         >
           {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
           {copied ? 'Copied' : 'Copy'}
         </button>
       </div>
-      <pre className="overflow-x-auto px-2.5 py-2 font-mono text-[12.5px] leading-relaxed text-dim">
+      <pre className="overflow-x-auto px-2.5 py-2 font-mono text-label leading-relaxed text-dim">
         <code>{commands}</code>
       </pre>
     </div>
@@ -453,7 +454,7 @@ function CommandBlock({ label, commands }: { label: string; commands: string }) 
 function InfoBox({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
     <div className="rounded-[12px] border border-line bg-white/[0.02] p-3">
-      <p className="flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.14em] text-dim">
+      <p className="flex items-center gap-1.5 text-caption font-semibold uppercase tracking-[0.14em] text-dim">
         {icon}
         {title}
       </p>
@@ -465,8 +466,8 @@ function InfoBox({ icon, title, children }: { icon: React.ReactNode; title: stri
 function Detail({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <div className="min-w-0">
-      <dt className="text-[11.5px] uppercase tracking-[0.12em] text-faint">{label}</dt>
-      <dd className={cn('mt-0.5 truncate text-[13px] text-dim', mono && 'font-mono')}>{value}</dd>
+      <dt className="text-caption uppercase tracking-[0.12em] text-faint">{label}</dt>
+      <dd className={cn('mt-0.5 truncate text-label text-dim', mono && 'font-mono')}>{value}</dd>
     </div>
   )
 }
@@ -483,15 +484,15 @@ function MismatchWarning({
   return (
     <div className="px-5 py-5">
       <div className="rounded-[14px] border border-brand-2/30 bg-brand-2/[0.06] p-4">
-        <p className="flex items-center gap-2 text-[14px] font-semibold text-brand-2">
+        <p className="flex items-center gap-2 text-body-sm font-semibold text-brand-2">
           <AlertTriangle className="size-4" /> This snapshot belongs to a different repository
         </p>
-        <p className="mt-2 text-[14px] leading-relaxed text-dim">
+        <p className="mt-2 text-body-sm leading-relaxed text-dim">
           The snapshot describes <span className="font-mono text-fg">{mismatch.snapshot.fullName}</span>, but this map
           is showing <span className="font-mono text-fg">{mismatch.mapped}</span>. Loading it would mix two
           repositories on one canvas, so nothing has changed.
         </p>
-        <ul className="mt-3 space-y-1 text-[13px] text-faint">
+        <ul className="mt-3 space-y-1 text-label text-faint">
           <li>· Snapshot root: <span className="font-mono">{mismatch.snapshot.root || 'not recorded'}</span></li>
           <li>· Snapshot branches: {mismatch.snapshot.branches}</li>
           <li>· Snapshot worktrees: {mismatch.snapshot.worktrees}</li>
@@ -505,7 +506,7 @@ function MismatchWarning({
             <ChevronRight />
           </Button>
         </div>
-        <p className="mt-2 text-[12.5px] text-faint">
+        <p className="mt-2 text-label text-faint">
           Opening it on its own replaces the GitHub map rather than merging the two.
         </p>
       </div>
@@ -525,10 +526,10 @@ function LoadedSummary({
   return (
     <div className="px-5 py-5">
       <div className="rounded-[14px] border border-[#8ee0c4]/25 bg-[#8ee0c4]/[0.05] p-4">
-        <p className="flex items-center gap-2 text-[15px] font-semibold text-[#8ee0c4]">
+        <p className="flex items-center gap-2 text-body font-semibold text-[#8ee0c4]">
           <ShieldCheck className="size-4" /> Snapshot loaded
         </p>
-        <p className="mt-1 text-[14px] leading-relaxed text-dim">
+        <p className="mt-1 text-body-sm leading-relaxed text-dim">
           Everything below was read in this tab. No file was uploaded.
         </p>
       </div>
@@ -549,7 +550,7 @@ function LoadedSummary({
         <SummaryRow label="Upstream" value={summary.remote ?? 'none recorded'} mono />
       </dl>
 
-      <p className="mt-3 break-all font-mono text-[12.5px] text-faint">{summary.root}</p>
+      <p className="mt-3 break-all font-mono text-label text-faint">{summary.root}</p>
 
       <div className="mt-4 flex flex-wrap gap-2">
         <Button size="sm" onClick={onClose}>
@@ -577,11 +578,11 @@ function SummaryRow({
 }) {
   return (
     <div className="flex items-baseline justify-between gap-3 rounded-[10px] border border-line bg-white/[0.02] px-3 py-2">
-      <dt className="flex shrink-0 items-center gap-1.5 text-[12px] uppercase tracking-[0.12em] text-faint">
+      <dt className="flex shrink-0 items-center gap-1.5 text-caption uppercase tracking-[0.12em] text-faint">
         {icon}
         {label}
       </dt>
-      <dd className={cn('min-w-0 truncate text-[14px] text-dim', mono && 'font-mono')}>{value}</dd>
+      <dd className={cn('min-w-0 truncate text-body-sm text-dim', mono && 'font-mono')}>{value}</dd>
     </div>
   )
 }
