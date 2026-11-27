@@ -1,6 +1,7 @@
 import { expect, test } from 'bun:test'
 
 import {
+  mergeLocalSnapshot,
   parseSnapshotFile,
   parseStatusLines,
   parseUpstreamTrack,
@@ -177,4 +178,16 @@ test('parseSnapshotFile rejects a snapshot missing required lists', () => {
   expect(() =>
     parseSnapshotFile(JSON.stringify({ kind: 'topology-local-snapshot', version: 1, repo: broken })),
   ).toThrow('branches')
+})
+
+// A merge keeps the GitHub facts, so a list that stopped at the page cap has to
+// stay marked as a floor once the local checkout is layered on top.
+test('a capped list keeps its floor marks after a snapshot merge', () => {
+  const merged = mergeLocalSnapshot({ ...SAMPLE_REPO, truncated: { branches: true, pullRequests: true } }, localRepo())
+
+  expect(merged.truncated).toEqual({ branches: true, pullRequests: true })
+
+  const text = describeRepo(merged).sentences.join(' ')
+  expect(text).toContain('+ branches across')
+  expect(text).toContain('+ open pull requests are still on GitHub')
 })
