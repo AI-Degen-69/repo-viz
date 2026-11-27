@@ -295,6 +295,10 @@ async function loadRepo(target: { owner: string; name: string }, token?: string)
       ? activityResult.data.slice(-12).map((week) => week.total)
       : []
 
+  // A capped list is a floor and not a total, so the model carries the fact and
+  // the counts built from it can say `500+` instead of `500`.
+  const truncated = { branches: branchesPage.truncated, pullRequests: pullsPage.truncated }
+
   const repo: RepoModel = {
     owner: ghRepo.owner?.login ?? target.owner,
     name: ghRepo.name,
@@ -324,17 +328,21 @@ async function loadRepo(target: { owner: string; name: string }, token?: string)
     contributors,
     commits,
     commitActivity,
+    ...(truncated.branches || truncated.pullRequests ? { truncated } : {}),
   }
 
   const partial = [branchesPage, pullsPage, contributorsResult, commitsResult].some((result) => !result.ok)
-  // A capped list is a floor, not a total, so the map says so instead of
-  // counting the pages it read as if the repository ended there.
+  // A capped list and a failed read can both be true, so each keeps its own
+  // sentence instead of one notice hiding the other.
   const capped = [...(branchesPage.truncated ? ['branches'] : []), ...(pullsPage.truncated ? ['open pull requests'] : [])]
-  const notice = capped.length
-    ? `Only the first ${MAX_PAGES * PAGE_SIZE} ${capped.join(' and ')} are read, so these counts are a floor rather than a total.`
-    : partial
-      ? 'Some GitHub data did not answer. The map shows what did.'
-      : null
+  const notices: string[] = []
+  if (capped.length) {
+    notices.push(
+      `Only the first ${MAX_PAGES * PAGE_SIZE} ${capped.join(' and ')} are read, so these counts are a floor rather than a total.`,
+    )
+  }
+  if (partial) notices.push('Some GitHub data did not answer. The map shows what did.')
+  const notice = notices.length ? notices.join(' ') : null
   const at = Date.now()
   cache.set(key, { at, repo, notice })
 
@@ -374,8 +382,8 @@ function clip(value: string, max: number): string {
   return `${(lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`
 }
 
-function countLabel(value: number, one: string, many: string): string {
-  return `${value} ${value === 1 ? one : many}`
+function countLabel(value: number, one: string, many: string, floor = false): string {
+  return `${value}${floor ? '+' : ''} ${value === 1 && !floor ? one : many}`
 }
 
 function permalinkPath(repo: RepoModel): string {
@@ -388,8 +396,8 @@ function mapTitle(repo: RepoModel): string {
 
 function mapDescription(repo: RepoModel): string {
   const facts = [
-    countLabel(repo.branches.length, 'branch', 'branches'),
-    countLabel(repo.pullRequests.length, 'open pull request', 'open pull requests'),
+    countLabel(repo.branches.length, 'branch', 'branches', repo.truncated?.branches),
+    countLabel(repo.pullRequests.length, 'open pull request', 'open pull requests', repo.truncated?.pullRequests),
     ...(repo.language ? [repo.language] : []),
   ].join(', ')
   return clip(repo.description ? `${repo.description} — ${facts}.` : `${repo.fullName}: ${facts}.`, 200)

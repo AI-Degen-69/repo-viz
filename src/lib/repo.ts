@@ -90,6 +90,9 @@ export type RepoModel = {
   contributors: RepoContributor[]
   commits: RepoCommit[]
   commitActivity: number[]
+  // Set when the reader stopped at its page cap. The lists are then a floor and
+  // not a total, so every count has to say so.
+  truncated?: { branches: boolean; pullRequests: boolean }
   local?: LocalSnapshot
 }
 
@@ -98,6 +101,11 @@ const relativeTime = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
 
 export function compact(value: number): string {
   return compactNumber.format(value)
+}
+
+// `500+ branches` when the reader stopped at its cap, `500 branches` otherwise.
+export function counted(value: number, truncated: boolean | undefined, one: string, many: string): string {
+  return `${value}${truncated ? '+' : ''} ${value === 1 && !truncated ? one : many}`
 }
 
 export function timeAgo(value: string | null): string {
@@ -197,7 +205,7 @@ export function describeRepo(repo: RepoModel): { sentences: string[]; attention:
   }
 
   sentences.push(
-    `${repo.fullName} has ${plural(repo.branches.length, 'branch', 'branches')} and ${plural(repo.pullRequests.length, 'open pull request', 'open pull requests')}.`,
+    `${repo.fullName} has ${counted(repo.branches.length, repo.truncated?.branches, 'branch', 'branches')} and ${counted(repo.pullRequests.length, repo.truncated?.pullRequests, 'open pull request', 'open pull requests')}.`,
   )
 
   if (repo.branches.length > 0) {
