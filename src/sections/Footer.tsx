@@ -8,10 +8,10 @@ export function Footer() {
       <Container className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <Logo />
-          <span className="hidden text-[13px] text-faint sm:block">{footer.tagline}</span>
+          <span className="hidden text-[14px] text-faint sm:block">{footer.tagline}</span>
         </div>
-        <p className="max-w-md text-[12.5px] leading-relaxed text-faint">{footer.note}</p>
-        <span className="text-[12px] text-faint">{footer.legal}</span>
+        <p className="max-w-md text-[13.5px] leading-relaxed text-faint">{footer.note}</p>
+        <span className="text-[13px] text-faint">{footer.legal}</span>
       </Container>
     </footer>
   )

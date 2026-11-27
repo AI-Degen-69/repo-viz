@@ -54,12 +54,12 @@ export function RepoMap({ repo, live, fetchedAt, notice }: RepoMapProps) {
       <Container fluid>
         <div className="flex flex-wrap items-end justify-between gap-3 border-t border-line pt-8">
           <div>
-            <p className="text-[12px] font-medium uppercase tracking-[0.22em] text-faint">The map</p>
+            <p className="text-[13px] font-medium uppercase tracking-[0.22em] text-faint">The map</p>
             <h2 className="mt-2 text-[26px] font-semibold tracking-[-0.03em] sm:text-[32px]">
               {localOnly ? 'Local repository map' : live ? 'Repository map' : 'Sample repository map'}
             </h2>
           </div>
-          <div className="flex flex-wrap items-center gap-3 text-[13px] text-faint">
+          <div className="flex flex-wrap items-center gap-3 text-[14px] text-faint">
             <Badge variant={local ? 'warning' : live ? 'success' : 'muted'}>
               {localOnly ? 'Local snapshot' : live ? 'Live from GitHub' : 'Sample data'}
             </Badge>
@@ -75,7 +75,7 @@ export function RepoMap({ repo, live, fetchedAt, notice }: RepoMapProps) {
         </div>
 
         {notice && (
-          <p className="mt-4 flex items-center gap-2 rounded-[12px] border border-brand-2/20 bg-brand-2/[0.05] px-3 py-2 text-[13px] text-dim">
+          <p className="mt-4 flex items-center gap-2 rounded-[12px] border border-brand-2/20 bg-brand-2/[0.05] px-3 py-2 text-[14px] text-dim">
             <AlertTriangle className="size-3.5 shrink-0 text-brand-2" />
             {notice}
           </p>
@@ -101,7 +101,7 @@ export function RepoMap({ repo, live, fetchedAt, notice }: RepoMapProps) {
               <TabsTrigger value="pulls">
                 <GitPullRequest />
                 Pull requests
-                <span className="text-[11px] text-faint">
+                <span className="text-[12px] text-faint">
                   {repo.pullRequests.length}
                   {repo.truncated?.pullRequests ? '+' : ''}
                 </span>
@@ -111,7 +111,7 @@ export function RepoMap({ repo, live, fetchedAt, notice }: RepoMapProps) {
                 Activity
               </TabsTrigger>
             </TabsList>
-            <p className="text-[12px] text-faint">
+            <p className="text-[13px] text-faint">
               {local ? 'GitHub links open only when the clone has a remote.' : 'Every link opens on GitHub in a new tab.'}
             </p>
           </div>
@@ -138,7 +138,7 @@ function RepoHeader({ repo, live }: { repo: RepoModel; live: boolean }) {
     <Card className="depth relative mt-4 overflow-hidden bg-surface/60">
       <CardContent className="flex flex-col gap-5 p-5 sm:p-6 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex min-w-0 gap-4">
-          <Avatar src={repo.avatarUrl} login={repo.owner} className="size-12 rounded-[14px] text-[14px]" />
+          <Avatar src={repo.avatarUrl} login={repo.owner} className="size-12 rounded-[14px] text-[15px]" />
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <a
@@ -158,11 +158,11 @@ function RepoHeader({ repo, live }: { repo: RepoModel; live: boolean }) {
               {repo.fork && <Badge variant="outline">Fork</Badge>}
               {repo.license && <Badge variant="muted">{repo.license}</Badge>}
             </div>
-            <p className="mt-1.5 max-w-2xl text-[14.5px] leading-relaxed text-dim">
+            <p className="mt-1.5 max-w-2xl text-[15.5px] leading-relaxed text-dim">
               {repo.description ??
                 (local ? `Read from the local clone at ${local.root}` : 'This repository has no description.')}
             </p>
-            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] text-faint">
+            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[14px] text-faint">
               {local ? (
                 <>
                   <Stat icon={<FolderGit2 className="size-3.5" />}>
@@ -219,8 +219,8 @@ function NarrativeCard({ repo }: { repo: RepoModel }) {
       <CardContent className="flex flex-1 flex-col p-5">
         <ol className="space-y-3">
           {sentences.map((sentence, index) => (
-            <li key={sentence} className="flex gap-2.5 text-[13.5px] leading-relaxed text-dim">
-              <span className="round mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-white/[0.05] text-[11px] font-semibold text-faint">
+            <li key={sentence} className="flex gap-2.5 text-[14.5px] leading-relaxed text-dim">
+              <span className="round mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-white/[0.05] text-[12px] font-semibold text-faint">
                 {index + 1}
               </span>
               <span>{sentence}</span>
@@ -230,11 +230,11 @@ function NarrativeCard({ repo }: { repo: RepoModel }) {
         <div className="mt-auto pt-5">
           {attention.length > 0 ? (
             <div className="rounded-[14px] border border-brand-2/20 bg-brand-2/[0.05] p-3">
-              <p className="flex items-center gap-1.5 text-[11.5px] font-semibold uppercase tracking-[0.14em] text-brand-2">
+              <p className="flex items-center gap-1.5 text-[12.5px] font-semibold uppercase tracking-[0.14em] text-brand-2">
                 <AlertTriangle className="size-3.5" />
                 Worth a look
               </p>
-              <ul className="mt-2 space-y-1.5 text-[13px] text-dim">
+              <ul className="mt-2 space-y-1.5 text-[14px] text-dim">
                 {attention.map((item) => (
                   <li key={item} className="flex gap-2">
                     <span className="text-brand-2">·</span>
@@ -244,7 +244,7 @@ function NarrativeCard({ repo }: { repo: RepoModel }) {
               </ul>
             </div>
           ) : (
-            <p className="flex items-center gap-2 rounded-[14px] bg-white/[0.03] p-3 text-[13px] text-dim">
+            <p className="flex items-center gap-2 rounded-[14px] bg-white/[0.03] p-3 text-[14px] text-dim">
               <ShieldCheck className="size-4 shrink-0 text-[#8ee0c4]" />
               Nothing needs attention on this map.
             </p>
@@ -263,9 +263,9 @@ function BranchTable({ repo }: { repo: RepoModel }) {
   return (
     <Card className="overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[560px] text-left text-[13.5px]">
+        <table className="w-full min-w-[560px] text-left text-[14.5px]">
           <thead>
-            <tr className="border-b border-line text-[11px] uppercase tracking-[0.14em] text-faint">
+            <tr className="border-b border-line text-[12px] uppercase tracking-[0.14em] text-faint">
               <th className="px-4 py-3 font-medium">Branch</th>
               <th className="px-4 py-3 font-medium">{repo.local ? 'Upstream' : 'Open PR'}</th>
               <th className="px-4 py-3 font-medium">Head</th>
@@ -293,13 +293,13 @@ function BranchTable({ repo }: { repo: RepoModel }) {
                     {repo.local ? (
                       branch.upstream ? (
                         <>
-                          <span className="font-mono text-[12.5px] text-dim">{branch.upstream}</span>
-                          <span className="text-[12px] text-faint">
+                          <span className="font-mono text-[13.5px] text-dim">{branch.upstream}</span>
+                          <span className="text-[13px] text-faint">
                             {branch.ahead ?? 0} ahead · {branch.behind ?? 0} behind
                           </span>
                         </>
                       ) : (
-                        <span className="text-[12px] text-faint">local only</span>
+                        <span className="text-[13px] text-faint">local only</span>
                       )
                     ) : null}
                     {branch.pullRequests.length > 0 ? (
@@ -368,19 +368,19 @@ function PullList({ repo }: { repo: RepoModel }) {
             <Avatar src={pull.avatarUrl} login={pull.author} className="size-7" />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[14px] font-medium">{pull.title}</span>
+                <span className="text-[15px] font-medium">{pull.title}</span>
                 {pull.draft && <Badge variant="muted">Draft</Badge>}
                 {pull.labels.map((label) => (
                   <span
                     key={label.name}
-                    className="rounded-full border px-2 py-0.5 text-[11px]"
+                    className="rounded-full border px-2 py-0.5 text-[12px]"
                     style={{ borderColor: `#${label.color}66`, color: `#${label.color}` }}
                   >
                     {label.name}
                   </span>
                 ))}
               </div>
-              <p className="mt-1 flex flex-wrap items-center gap-1.5 text-[12px] text-faint">
+              <p className="mt-1 flex flex-wrap items-center gap-1.5 text-[13px] text-faint">
                 <span className="font-mono text-brand-2">#{pull.number}</span>
                 <span>{pull.author}</span>
                 <span>·</span>
@@ -391,7 +391,7 @@ function PullList({ repo }: { repo: RepoModel }) {
                 <span>updated {timeAgo(pull.updatedAt)}</span>
               </p>
             </div>
-            <span className="flex shrink-0 items-center gap-1.5 text-[12px] text-faint">
+            <span className="flex shrink-0 items-center gap-1.5 text-[13px] text-faint">
               <MessageSquare className="size-3" />
               {pull.comments}
             </span>
@@ -411,7 +411,7 @@ function Activity({ repo }: { repo: RepoModel }) {
     <div className="grid gap-4 lg:grid-cols-2">
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-[15px]">Commits per week</CardTitle>
+          <CardTitle className="text-[16px]">Commits per week</CardTitle>
           <CardDescription>
             Last 12 weeks · {plural(total, 'commit', 'commits')}
           </CardDescription>
@@ -429,13 +429,13 @@ function Activity({ repo }: { repo: RepoModel }) {
               ))}
             </div>
           ) : (
-            <p className="py-6 text-[13px] text-faint">
+            <p className="py-6 text-[14px] text-faint">
               {repo.local
                 ? 'No commits landed in the last 12 weeks.'
                 : 'GitHub has not returned weekly activity for this repository yet.'}
             </p>
           )}
-          <div className="mt-2 flex justify-between text-[11px] text-faint">
+          <div className="mt-2 flex justify-between text-[12px] text-faint">
             <span>12 weeks ago</span>
             <span>This week</span>
           </div>
@@ -444,7 +444,7 @@ function Activity({ repo }: { repo: RepoModel }) {
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-[15px]">Code and people</CardTitle>
+          <CardTitle className="text-[16px]">Code and people</CardTitle>
           <CardDescription>
             {repo.languages.length > 0
               ? `${plural(repo.languages.length, 'language', 'languages')} · ${plural(repo.contributors.length, 'contributor', 'contributors')}`
@@ -470,7 +470,7 @@ function Activity({ repo }: { repo: RepoModel }) {
               </div>
               <ul className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5">
                 {repo.languages.map((language, index) => (
-                  <li key={language.name} className="flex items-center gap-1.5 text-[12.5px] text-dim">
+                  <li key={language.name} className="flex items-center gap-1.5 text-[13.5px] text-dim">
                     <span
                       className="round size-2 shrink-0 rounded-full"
                       style={{ backgroundColor: LANGUAGE_COLORS[index % LANGUAGE_COLORS.length] }}
@@ -485,7 +485,7 @@ function Activity({ repo }: { repo: RepoModel }) {
 
           {repo.contributors.length > 0 && (
             <div className="mt-4 border-t border-line pt-3">
-              <p className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.14em] text-faint">
+              <p className="flex items-center gap-1.5 text-[12px] uppercase tracking-[0.14em] text-faint">
                 <Users className="size-3" />
                 Top contributors
               </p>
@@ -497,9 +497,9 @@ function Activity({ repo }: { repo: RepoModel }) {
                     target="_blank"
                     rel="noreferrer"
                     title={`${person.login} · ${person.contributions} contributions`}
-                    className="flex items-center gap-1.5 rounded-full border border-line py-0.5 pl-0.5 pr-2 text-[12px] text-dim transition-colors hover:border-line-strong hover:text-fg"
+                    className="flex items-center gap-1.5 rounded-full border border-line py-0.5 pl-0.5 pr-2 text-[13px] text-dim transition-colors hover:border-line-strong hover:text-fg"
                   >
-                    <Avatar src={person.avatarUrl} login={person.login} className="size-5 text-[10px]" />
+                    <Avatar src={person.avatarUrl} login={person.login} className="size-5 text-[11px]" />
                     {person.login}
                   </a>
                 ))}
@@ -511,7 +511,7 @@ function Activity({ repo }: { repo: RepoModel }) {
 
       <Card className="lg:col-span-2">
         <CardHeader className="pb-2">
-          <CardTitle className="text-[15px]">Recent commits</CardTitle>
+          <CardTitle className="text-[16px]">Recent commits</CardTitle>
           <CardDescription>The newest commits on the default branch.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -527,18 +527,18 @@ function Activity({ repo }: { repo: RepoModel }) {
                   >
                     <Avatar src={commit.avatarUrl} login={commit.author} className="size-6" />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[13.5px] text-dim">{commit.message || 'No commit message'}</p>
-                      <p className="text-[11.5px] text-faint">
+                      <p className="truncate text-[14.5px] text-dim">{commit.message || 'No commit message'}</p>
+                      <p className="text-[12.5px] text-faint">
                         {commit.author} · {timeAgo(commit.date)}
                       </p>
                     </div>
-                    <span className="shrink-0 font-mono text-[11.5px] text-faint">{shortSha(commit.sha)}</span>
+                    <span className="shrink-0 font-mono text-[12.5px] text-faint">{shortSha(commit.sha)}</span>
                   </a>
                 </li>
               ))}
             </ol>
           ) : (
-            <p className="py-4 text-[13px] text-faint">This repository has no commits yet.</p>
+            <p className="py-4 text-[14px] text-faint">This repository has no commits yet.</p>
           )}
         </CardContent>
       </Card>
@@ -594,7 +594,7 @@ function LocalWorktrees({ repo }: { repo: RepoModel }) {
               <FolderGit2 className="mt-0.5 hidden size-4 shrink-0 text-faint sm:block" />
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-mono text-[13.5px] font-medium">{shortPath(worktree.path)}</span>
+                  <span className="font-mono text-[14.5px] font-medium">{shortPath(worktree.path)}</span>
                   {worktree.branch ? (
                     <Badge variant="muted">{worktree.branch}</Badge>
                   ) : (
@@ -604,13 +604,13 @@ function LocalWorktrees({ repo }: { repo: RepoModel }) {
                   {worktree.locked && <Badge variant="outline">locked</Badge>}
                   {worktree.prunable && <Badge variant="destructive">prunable</Badge>}
                 </div>
-                <p className="mt-1 break-all font-mono text-[11.5px] text-faint">{worktree.path}</p>
+                <p className="mt-1 break-all font-mono text-[12.5px] text-faint">{worktree.path}</p>
                 {worktree.files?.length > 0 && (
                   <ul className="mt-2 grid gap-1 sm:grid-cols-2">
                     {worktree.files.slice(0, 6).map((file, index) => (
                       <li
                         key={`${file.status}-${file.path}-${index}`}
-                        className="flex min-w-0 gap-2 text-[12px] text-dim"
+                        className="flex min-w-0 gap-2 text-[13px] text-dim"
                       >
                         <span className="shrink-0 font-mono text-brand-2">{file.status}</span>
                         <span className="truncate font-mono">{file.path}</span>
@@ -619,10 +619,10 @@ function LocalWorktrees({ repo }: { repo: RepoModel }) {
                   </ul>
                 )}
                 {(worktree.files?.length ?? 0) > 6 && (
-                  <p className="mt-1 text-[11.5px] text-faint">+{(worktree.files?.length ?? 0) - 6} more files</p>
+                  <p className="mt-1 text-[12.5px] text-faint">+{(worktree.files?.length ?? 0) - 6} more files</p>
                 )}
               </div>
-              <div className="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-faint">
+              <div className="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-faint">
                 <span className={worktree.dirty > 0 ? 'text-brand-2' : undefined}>
                   {plural(worktree.dirty, 'dirty file', 'dirty files')}
                 </span>
@@ -637,7 +637,7 @@ function LocalWorktrees({ repo }: { repo: RepoModel }) {
           ))}
         </ul>
 
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-line px-4 py-3 text-[11.5px] text-faint">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-line px-4 py-3 text-[12.5px] text-faint">
           <span>{plural(local.stashes, 'stash', 'stashes')}</span>
           <span>{local.upstream ? `upstream ${local.upstream}` : 'no upstream on the current branch'}</span>
           <span className="ml-auto">Scanned {timeAgo(local.scannedAt)} · nothing uploaded</span>
@@ -665,7 +665,7 @@ function Avatar({ src, login, className }: { src: string; login: string; classNa
   return (
     <span
       className={cn(
-        'round grid shrink-0 place-items-center overflow-hidden rounded-full bg-secondary text-[11px] font-semibold uppercase text-dim',
+        'round grid shrink-0 place-items-center overflow-hidden rounded-full bg-secondary text-[12px] font-semibold uppercase text-dim',
         className,
       )}
     >
@@ -701,5 +701,5 @@ function CopyButton({ value, label = 'Copy clone URL' }: { value: string; label?
 }
 
 function Empty({ children }: { children: ReactNode }) {
-  return <p className="rounded-lg border border-line bg-card p-6 text-[14px] text-faint">{children}</p>
+  return <p className="rounded-lg border border-line bg-card p-6 text-[15px] text-faint">{children}</p>
 }

@@ -186,7 +186,7 @@ export function App() {
         <div ref={mapRef} className="scroll-mt-20">
           {loading && result ? (
             <div className="w-full px-5 pt-4 sm:px-8">
-              <p className="flex items-center gap-2 rounded-[10px] border border-line bg-white/[0.03] px-3 py-2 text-[12.5px] text-dim">
+              <p className="flex items-center gap-2 rounded-[10px] border border-line bg-white/[0.03] px-3 py-2 text-[13.5px] text-dim">
                 <span className="size-2 animate-pulse rounded-full bg-brand" />
                 Reading <span className="font-mono text-fg">{value || 'the new repository'}</span> — the map below
                 still shows <span className="font-mono text-fg">{result.repo.fullName}</span> until the new data arrives.
