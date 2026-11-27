@@ -154,12 +154,12 @@ export function describeRepo(repo: RepoModel): { sentences: string[]; attention:
   // in a clone, and the copy never pretends otherwise.
   if (local) {
     sentences.push(
-      `${repo.fullName} has ${plural(repo.branches.length, 'branch', 'branches')} across ${plural(local.worktrees.length, 'local worktree', 'local worktrees')}.`,
+      `${repo.fullName} has ${counted(repo.branches.length, repo.truncated?.branches, 'branch', 'branches')} across ${plural(local.worktrees.length, 'local worktree', 'local worktrees')}.`,
     )
 
     if (repo.pullRequests.length > 0) {
       sentences.push(
-        `${plural(repo.pullRequests.length, 'open pull request is', 'open pull requests are')} still on GitHub; the snapshot adds the local checkout.`,
+        `${counted(repo.pullRequests.length, repo.truncated?.pullRequests, 'open pull request is', 'open pull requests are')} still on GitHub; the snapshot adds the local checkout.`,
       )
     }
 

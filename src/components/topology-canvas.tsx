@@ -340,8 +340,11 @@ export function TopologyCanvas({ repo, live, fetchedAt }: TopologyCanvasProps) {
           )}
           <Badge variant={localOnly ? 'warning' : live ? 'success' : 'muted'}>{sourceLabel}</Badge>
           <span className="text-[11px] text-faint">
-            {layout.counts.branches} {layout.counts.branches === 1 ? 'branch' : 'branches'} · {layout.counts.pulls} open{' '}
-            {layout.counts.pulls === 1 ? 'PR' : 'PRs'}
+            {layout.counts.branches}
+            {repo.truncated?.branches ? '+' : ''}{' '}
+            {layout.counts.branches === 1 && !repo.truncated?.branches ? 'branch' : 'branches'} · {layout.counts.pulls}
+            {repo.truncated?.pullRequests ? '+' : ''} open{' '}
+            {layout.counts.pulls === 1 && !repo.truncated?.pullRequests ? 'PR' : 'PRs'}
             {layout.hiddenBranches > 0 ? ` · ${layout.branches.length} drawn` : ''}
           </span>
           <span className="ml-auto flex items-center gap-1.5 text-[10.5px] text-faint">
