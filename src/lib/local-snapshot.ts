@@ -212,5 +212,18 @@ export function parseSnapshotFile(text: string): RepoModel {
     throw new SnapshotError('That snapshot has a malformed worktree entry. Re-run the generator to make a new one.')
   }
 
+  // Every branch is read too: the canvas takes the name and the pull-request
+  // numbers straight off each entry, so a malformed one throws mid-draw instead
+  // of failing here with a sentence.
+  const branches = repo.branches
+  if (
+    !Array.isArray(branches) ||
+    !branches.every(
+      (branch) => isObject(branch) && typeof branch.name === 'string' && Array.isArray(branch.pullRequests),
+    )
+  ) {
+    throw new SnapshotError('That snapshot has a malformed branch entry. Re-run the generator to make a new one.')
+  }
+
   return repo as unknown as RepoModel
 }

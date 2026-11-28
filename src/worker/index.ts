@@ -1,6 +1,7 @@
 import { Hono, type Context } from 'hono'
 import { bodyLimit } from 'hono/body-limit'
 
+import { counted } from '../lib/repo'
 import type { RepoBranch, RepoCommit, RepoContributor, RepoLanguage, RepoModel, RepoPullRequest } from '../lib/repo'
 
 // The Worker in front of the static site. It reads public GitHub data and
@@ -382,10 +383,6 @@ function clip(value: string, max: number): string {
   return `${(lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`
 }
 
-function countLabel(value: number, one: string, many: string, floor = false): string {
-  return `${value}${floor ? '+' : ''} ${value === 1 && !floor ? one : many}`
-}
-
 function permalinkPath(repo: RepoModel): string {
   return `/r/${encodeURIComponent(repo.owner)}/${encodeURIComponent(repo.name)}`
 }
@@ -396,8 +393,8 @@ function mapTitle(repo: RepoModel): string {
 
 function mapDescription(repo: RepoModel): string {
   const facts = [
-    countLabel(repo.branches.length, 'branch', 'branches', repo.truncated?.branches),
-    countLabel(repo.pullRequests.length, 'open pull request', 'open pull requests', repo.truncated?.pullRequests),
+    counted(repo.branches.length, repo.truncated?.branches, 'branch', 'branches'),
+    counted(repo.pullRequests.length, repo.truncated?.pullRequests, 'open pull request', 'open pull requests'),
     ...(repo.language ? [repo.language] : []),
   ].join(', ')
   return clip(repo.description ? `${repo.description} — ${facts}.` : `${repo.fullName}: ${facts}.`, 200)
