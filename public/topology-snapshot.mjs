@@ -10,11 +10,12 @@
 // Works the same on Windows, macOS and Linux. Node.js 18+ required.
 
 import { execFileSync } from 'node:child_process'
-import { existsSync, readdirSync, statSync, writeFileSync } from 'node:fs'
+import { existsSync, readdirSync, realpathSync, statSync, writeFileSync } from 'node:fs'
 import { basename, dirname, join, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const KIND = 'topology-local-snapshot'
-const VERSION = 1
+export const KIND = 'topology-local-snapshot'
+export const VERSION = 1
 const RECENT_COMMITS = 12
 const MAX_DIRTY_FILES = 200
 const MAX_FILES_PER_WORKTREE = 50
@@ -119,7 +120,7 @@ function resolveRepository(target) {
   )
 }
 
-function parseGitHubRemote(url) {
+export function parseGitHubRemote(url) {
   if (!url) return null
   const clean = url.trim().replace(/\.git$/i, '')
   const match = clean.match(/github\.com[:/]([^/]+)\/([^/]+)$/i)
@@ -136,8 +137,12 @@ function normalizePath(path, redact) {
 
 // ---------------------------------------------------------------------------
 // porcelain parsers (the same rules the page validates against)
+//
+// These are copies, not imports: this file has to run from a bare download.
+// tests/standalone-snapshot.test.ts pins each one to src/lib/local-snapshot.ts,
+// which is where a parser fix has to land first.
 
-function parseWorktreeList(text) {
+export function parseWorktreeList(text) {
   const worktrees = []
   let current = null
   const flush = () => {
@@ -175,7 +180,7 @@ function parseWorktreeList(text) {
   return worktrees
 }
 
-function parseUpstreamTrack(value) {
+export function parseUpstreamTrack(value) {
   const track = String(value || '').trim()
   if (!track) return { ahead: 0, behind: 0, gone: false }
   if (track.includes('gone')) return { ahead: 0, behind: 0, gone: true }
@@ -186,7 +191,7 @@ function parseUpstreamTrack(value) {
   }
 }
 
-function parseStatus(text) {
+export function parseStatus(text) {
   return String(text || '')
     .split(/\r?\n/)
     .filter(Boolean)
@@ -369,7 +374,7 @@ function snapshot(repoPath, options) {
 // A remote can carry credentials (`https://user:token@host/owner/name.git`).
 // A token never belongs in a snapshot, so it is stripped whether or not
 // `--redact` was passed; the repository address stays readable.
-function stripCredentials(url) {
+export function stripCredentials(url) {
   if (!url) return null
   return url.replace(/\/\/[^/@]*@/, '//')
 }
@@ -402,4 +407,20 @@ function main() {
   console.log('Nothing was uploaded. Open that file in Topology with "Upload an existing file".\n')
 }
 
-main()
+// Importing this file must not read a repository or write a snapshot; it only
+// does that when node was pointed straight at it. `import.meta.url` names the
+// real file while the shell may name a symbolic link to it, so both sides are
+// compared after resolving links. Windows also varies drive-letter and
+// separator casing, so the fallback comparison folds case there.
+export function isEntryPoint(script = process.argv[1]) {
+  if (!script) return false
+  const invoked = resolve(script)
+  const here = fileURLToPath(import.meta.url)
+  try {
+    return realpathSync(invoked) === realpathSync(here)
+  } catch {
+    return process.platform === 'win32' ? invoked.toLowerCase() === here.toLowerCase() : invoked === here
+  }
+}
+
+if (isEntryPoint()) main()
