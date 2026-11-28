@@ -1,4 +1,8 @@
 import { expect, test } from 'bun:test'
+import { mkdtempSync, rmSync, symlinkSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import {
   SNAPSHOT_KIND,
@@ -10,6 +14,7 @@ import {
 import {
   KIND,
   VERSION,
+  isEntryPoint,
   parseGitHubRemote,
   parseStatus,
   parseUpstreamTrack as standaloneUpstreamTrack,
@@ -70,6 +75,36 @@ test('the standalone generator reads the same repositories out of the same remot
   expect(parseGitHubRemote('https://github.com/owner/name')).toEqual({ owner: 'owner', name: 'name' })
   expect(parseGitHubRemote('https://gitlab.com/owner/name.git')).toBeNull()
   expect(parseGitHubRemote('')).toBeNull()
+})
+
+test('the entry-point guard runs the generator only for the generator itself', () => {
+  const self = fileURLToPath(new URL('../public/topology-snapshot.mjs', import.meta.url))
+  const other = fileURLToPath(new URL('../tests/standalone-snapshot.test.ts', import.meta.url))
+
+  expect(isEntryPoint(self)).toBe(true)
+  expect(isEntryPoint(other)).toBe(false)
+  expect(isEntryPoint(undefined)).toBe(false)
+})
+
+// A shell can name a symbolic link while `import.meta.url` names the real file.
+// If that difference counted as "not the entry point", the generator would exit
+// silently and write nothing.
+test('the entry-point guard still runs the generator through a symbolic link', () => {
+  const self = fileURLToPath(new URL('../public/topology-snapshot.mjs', import.meta.url))
+  const dir = mkdtempSync(join(tmpdir(), 'topology-entry-'))
+  const link = join(dir, 'linked-snapshot.mjs')
+  try {
+    symlinkSync(self, link, 'file')
+  } catch {
+    // Creating links needs a privilege this machine may not grant.
+    rmSync(dir, { recursive: true, force: true })
+    return
+  }
+  try {
+    expect(isEntryPoint(link)).toBe(true)
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
+  }
 })
 
 test('the standalone generator never writes a credential into a snapshot', () => {

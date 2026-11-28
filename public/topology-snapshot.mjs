@@ -10,7 +10,7 @@
 // Works the same on Windows, macOS and Linux. Node.js 18+ required.
 
 import { execFileSync } from 'node:child_process'
-import { existsSync, readdirSync, statSync, writeFileSync } from 'node:fs'
+import { existsSync, readdirSync, realpathSync, statSync, writeFileSync } from 'node:fs'
 import { basename, dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -408,15 +408,19 @@ function main() {
 }
 
 // Importing this file must not read a repository or write a snapshot; it only
-// does that when node was pointed straight at it. Windows compares drive-letter
-// and separator casing differently between the shell and `import.meta.url`,
-// so that platform folds case before deciding.
-function isEntryPoint() {
-  const script = process.argv[1]
+// does that when node was pointed straight at it. `import.meta.url` names the
+// real file while the shell may name a symbolic link to it, so both sides are
+// compared after resolving links. Windows also varies drive-letter and
+// separator casing, so the fallback comparison folds case there.
+export function isEntryPoint(script = process.argv[1]) {
   if (!script) return false
   const invoked = resolve(script)
   const here = fileURLToPath(import.meta.url)
-  return process.platform === 'win32' ? invoked.toLowerCase() === here.toLowerCase() : invoked === here
+  try {
+    return realpathSync(invoked) === realpathSync(here)
+  } catch {
+    return process.platform === 'win32' ? invoked.toLowerCase() === here.toLowerCase() : invoked === here
+  }
 }
 
 if (isEntryPoint()) main()
