@@ -180,6 +180,21 @@ test('parseSnapshotFile rejects a snapshot missing required lists', () => {
   ).toThrow('branches')
 })
 
+// The canvas reads a branch's name and its pull-request numbers directly. A
+// branch entry that lacks them would throw while painting, so the gate has to
+// refuse it here and say so.
+test('parseSnapshotFile rejects a branch entry the canvas cannot draw', () => {
+  const wrap = (branches: unknown) =>
+    JSON.stringify({ kind: 'topology-local-snapshot', version: 1, repo: { ...localRepo(), branches } })
+  const branch = { name: 'main', sha: 'abc', isDefault: true, protected: false, pullRequests: [] }
+
+  expect(() => parseSnapshotFile(wrap([{ ...branch, pullRequests: undefined }]))).toThrow('malformed branch entry')
+  expect(() => parseSnapshotFile(wrap([{ ...branch, name: undefined }]))).toThrow('malformed branch entry')
+  expect(() => parseSnapshotFile(wrap([null]))).toThrow('malformed branch entry')
+
+  expect(parseSnapshotFile(wrap([branch])).branches).toEqual([branch])
+})
+
 // A merge keeps the GitHub facts, so a list that stopped at the page cap has to
 // stay marked as a floor once the local checkout is layered on top.
 test('a capped list keeps its floor marks after a snapshot merge', () => {
