@@ -23,7 +23,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
-import { compact, describeRepo, initials, plural, shortSha, timeAgo, type RepoModel } from '../lib/repo'
+import { compact, counted, describeRepo, initials, plural, shortSha, timeAgo, type RepoModel } from '../lib/repo'
 import { branchUrl } from '../lib/topology'
 import { Container } from './Container'
 import { TopologyCanvas } from './topology-canvas'
@@ -169,9 +169,7 @@ function RepoHeader({ repo, live }: { repo: RepoModel; live: boolean }) {
                     {plural(local.worktrees.length, 'worktree', 'worktrees')}
                   </Stat>
                   <Stat icon={<GitBranch className="size-3.5" />}>
-                    {repo.truncated?.branches
-                      ? `${repo.branches.length}+ branches`
-                      : plural(repo.branches.length, 'branch', 'branches')}
+                    {counted(repo.branches.length, repo.truncated?.branches, 'branch', 'branches')}
                   </Stat>
                   <Stat icon={<AlertTriangle className="size-3.5" />}>
                     {plural(uncommitted, 'uncommitted file', 'uncommitted files')}

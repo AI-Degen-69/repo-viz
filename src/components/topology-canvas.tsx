@@ -22,7 +22,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { timeAgo, type RepoModel, type RepoPullRequest } from '../lib/repo'
+import { counted, timeAgo, type RepoModel, type RepoPullRequest } from '../lib/repo'
 import {
   branchUrl,
   layoutTopology,
@@ -340,11 +340,8 @@ export function TopologyCanvas({ repo, live, fetchedAt }: TopologyCanvasProps) {
           )}
           <Badge variant={localOnly ? 'warning' : live ? 'success' : 'muted'}>{sourceLabel}</Badge>
           <span className="text-label text-faint">
-            {layout.counts.branches}
-            {repo.truncated?.branches ? '+' : ''}{' '}
-            {layout.counts.branches === 1 && !repo.truncated?.branches ? 'branch' : 'branches'} · {layout.counts.pulls}
-            {repo.truncated?.pullRequests ? '+' : ''} open{' '}
-            {layout.counts.pulls === 1 && !repo.truncated?.pullRequests ? 'PR' : 'PRs'}
+            {counted(layout.counts.branches, repo.truncated?.branches, 'branch', 'branches')} ·{' '}
+            {counted(layout.counts.pulls, repo.truncated?.pullRequests, 'open PR', 'open PRs')}
             {layout.hiddenBranches > 0 ? ` · ${layout.branches.length} drawn` : ''}
           </span>
           <span className="ml-auto flex items-center gap-1.5 text-label text-faint">

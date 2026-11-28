@@ -397,6 +397,41 @@ test('a list that ends before the page cap is not marked as a floor', async () =
   expect(body.notice).toBeNull()
 })
 
+// A capped list is a floor, and the share card and the map are two surfaces of
+// the same fact. Both read the one formatter, so the plus sign cannot appear on
+// one and go missing on the other.
+test('a capped map permalink marks the branch count as a floor', async () => {
+  const branches = Array.from({ length: 500 }, (_, index) => ({
+    name: index === 0 ? 'main' : `b${index}`,
+    commit: { sha: `sha${index}` },
+    protected: false,
+  }))
+  globalThis.fetch = (async (input: string | URL | Request) => {
+    const url = String(input)
+    if (url.endsWith('/repos/octo/wide')) {
+      return json(
+        permalinkRepo({
+          name: 'wide',
+          full_name: 'octo/wide',
+          html_url: 'https://github.com/octo/wide',
+          clone_url: 'https://github.com/octo/wide.git',
+        }),
+      )
+    }
+    const pageNumber = Number(new URL(url).searchParams.get('page') ?? '1')
+    if (url.includes('/branches')) return json(branches.slice((pageNumber - 1) * 100, pageNumber * 100))
+    if (url.includes('/pulls')) return json([])
+    if (url.includes('/languages')) return json({ TypeScript: 100 })
+    if (url.includes('/contributors')) return json([])
+    if (url.includes('/commits')) return json([])
+    if (url.includes('/stats/commit_activity')) return json([])
+    return json({}, 404)
+  }) as unknown as typeof fetch
+
+  const html = await (await page('/r/octo/wide')).text()
+  expect(html).toContain('500+ branches, 0 open pull requests')
+})
+
 test('a missing repository is a clear 404, not a guessed map', async () => {
   globalThis.fetch = (async () => json({ message: 'Not Found' }, 404)) as unknown as typeof fetch
   const response = await call('https://github.com/nobody/nothing-here')
